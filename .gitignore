@@ -2,3 +2,16 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# Next.js
+.next/
+out/
+node_modules/
+*.log
+.env
+.env.local
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
