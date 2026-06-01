@@ -318,6 +318,80 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Trust section ───────────────────────── */}
+      <section
+        className="relative z-10 px-6 py-20"
+        style={{ background: '#111118' }}
+      >
+        <div className="max-w-3xl mx-auto">
+
+          {/* Eyebrow */}
+          <p className="text-center mb-8" style={{
+            fontSize: '11px', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '2px', color: '#a09a90',
+          }}>
+            Warum vertrauen?
+          </p>
+
+          {/* Main statement */}
+          <p className="font-fraunces text-center mb-14 leading-snug" style={{
+            fontSize: 'clamp(22px, 3.5vw, 32px)', color: '#f0ede8',
+            fontWeight: 300,
+          }}>
+            Wir ersetzen keine Pflegefachkraft.<br />
+            Wir geben dir die Information,<br />
+            die du brauchst, um auf Augenhöhe zu sein.
+          </p>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-6 mb-14 text-center">
+            {[
+              { num: '1 von 3', label: 'Pflegeeinstufungen sind zu niedrig' },
+              { num: '6 Wochen', label: 'hat man Zeit für einen Widerspruch' },
+              { num: '0€', label: 'kostet der erste Schritt' },
+            ].map(({ num, label }) => (
+              <div key={num}>
+                <div className="font-fraunces mb-2" style={{
+                  fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 700, color: '#d4860a', lineHeight: 1,
+                }}>
+                  {num}
+                </div>
+                <div style={{ fontSize: '14px', color: '#a09a90', lineHeight: 1.5 }}>
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Testimonials */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              {
+                quote: 'Ich wusste nicht mal, dass ich Widerspruch einlegen kann. Jetzt haben wir Pflegegrad 3.',
+                name: 'Sandra K., pflegende Tochter',
+              },
+              {
+                quote: 'Endlich jemand, der mir erklärt, was in diesen Formularen steht.',
+                name: 'Thomas M., Ehemann einer Pflegebedürftigen',
+              },
+            ].map(({ quote, name }) => (
+              <div key={name} className="rounded-2xl p-6" style={{
+                background: '#1a1a2e',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}>
+                <p className="font-fraunces mb-5 leading-relaxed" style={{
+                  fontSize: '16px', color: '#f0ede8', fontStyle: 'italic',
+                }}>
+                  &ldquo;{quote}&rdquo;
+                </p>
+                <p style={{ fontSize: '13px', color: '#a09a90' }}>— {name}</p>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
       {/* Footer disclaimer */}
       <footer
         className="relative z-10 text-center px-6 pb-10"
