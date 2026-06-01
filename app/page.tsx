@@ -280,7 +280,7 @@ export default function Home() {
       </section>
 
       {/* ── SEKTION 1b: FÜR WEN ─────────────────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px 60px' }}>
         <div className="reveal-scroll" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
           <p style={{ fontSize: 18, color: '#f0ede8', lineHeight: 2, marginBottom: 28 }}>
             Für pflegende Angehörige.<br />
