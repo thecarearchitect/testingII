@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import SparkleIcon from './SparkleIcon';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -69,7 +70,7 @@ export default function MessageBubble({ message }: { message: Message }) {
     <div className="flex gap-3 message-enter group">
       <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400/30
                       flex items-center justify-center flex-shrink-0 mt-1">
-        <span className="text-amber-300 text-xs font-bold">KI</span>
+        <SparkleIcon />
       </div>
       <div className="flex-1 max-w-[88%]">
         <div className="glass-light rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg shadow-black/20">

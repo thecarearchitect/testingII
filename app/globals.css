@@ -153,6 +153,22 @@ body {
 .prose-care strong       { font-weight: 600; color: #92400e; }
 .prose-care h3           { font-size: 0.9rem; font-weight: 700; margin: 0.9rem 0 0.4rem; color: #78350f; }
 
+/* ─── Sparkle icon ──────────────────────── */
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);   }
+  50%       { opacity: 0.7; transform: scale(1.25); }
+}
+.sparkle-idle {
+  display: inline-block;
+  color: #d4860a;
+  animation: sparkle-pulse 2.8s ease-in-out infinite;
+}
+.sparkle-active {
+  display: inline-block;
+  color: #d4860a;
+  animation: sparkle-pulse 0.65s ease-in-out infinite;
+}
+
 /* ─── Scroll reveal ──────────────────────── */
 .reveal-scroll {
   opacity: 0;

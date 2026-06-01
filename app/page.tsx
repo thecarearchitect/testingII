@@ -7,6 +7,7 @@ import PaperCanvas from '@/components/PaperCanvas';
 import DisclaimerModal from '@/components/DisclaimerModal';
 import SettingsPanel, { UserSettings } from '@/components/SettingsPanel';
 import { ModeId, MODES } from '@/lib/modes';
+import SparkleIcon from '@/components/SparkleIcon';
 
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
@@ -92,7 +93,7 @@ export default function Home() {
                 <Heart size={14} className="text-amber-300" fill="currentColor" />
               </div>
               <span className="font-fraunces text-white/80 text-sm group-hover:text-white transition-colors">
-                PflegeAssistent <span className="text-amber-400">KI</span>
+                PflegeAssistent <SparkleIcon />
               </span>
             </button>
 
@@ -171,7 +172,7 @@ export default function Home() {
               <Heart size={14} color="#f59e0b" fill="#f59e0b" />
             </div>
             <span className="font-fraunces" style={{ color: '#f0ede8', fontSize: 15, fontWeight: 600 }}>
-              PflegeAssistent <span style={{ color: '#d4860a' }}>KI</span>
+              PflegeAssistent <SparkleIcon />
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

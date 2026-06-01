@@ -6,6 +6,7 @@ import MessageBubble from './MessageBubble';
 import StarterQuestions from './StarterQuestions';
 import { MODES, ModeId } from '@/lib/modes';
 import { UserSettings } from './SettingsPanel';
+import SparkleIcon from './SparkleIcon';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -130,7 +131,7 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
             {isLoading && messages[messages.length - 1]?.content === '' && (
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-amber-300 text-xs font-bold">KI</span>
+                  <SparkleIcon active />
                 </div>
                 <div className="glass-light rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg shadow-black/20">
                   <div className="flex gap-1.5 items-center h-5">
