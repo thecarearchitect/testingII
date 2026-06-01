@@ -1,117 +1,94 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Shield, ExternalLink, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Shield, Check } from 'lucide-react';
 
-interface DisclaimerModalProps {
-  onAccept: () => void;
-}
-
-export default function DisclaimerModal({ onAccept }: DisclaimerModalProps) {
+export default function DisclaimerModal({ onAccept }: { onAccept: () => void }) {
   const [checked1, setChecked1] = useState(false);
   const [checked2, setChecked2] = useState(false);
-
   const canProceed = checked1 && checked2;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+         style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
+      <div className="w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl"
+           style={{ background: 'rgba(20,14,6,0.92)', border: '1px solid rgba(255,190,80,0.15)' }}>
+
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 rounded-t-2xl">
+        <div className="px-6 pt-6 pb-4 border-b border-white/8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-              <Shield size={22} className="text-white" />
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/25 flex items-center justify-center">
+              <Shield size={20} className="text-amber-400" />
             </div>
             <div>
-              <h2 className="text-white font-bold text-lg">Wichtige Hinweise</h2>
-              <p className="text-blue-100 text-sm">Bitte vor der Nutzung lesen</p>
+              <h2 className="text-white/90 font-bold text-base">Wichtige Hinweise</h2>
+              <p className="text-white/35 text-xs">Bitte vor der Nutzung lesen</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-5">
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <p className="text-amber-800 text-sm font-semibold mb-1">⚠️ Kein Ersatz für Fachberatung</p>
-            <p className="text-amber-700 text-sm leading-relaxed">
-              Dieser KI-Assistent gibt <strong>allgemeine Informationen</strong> – keine individuelle
-              Rechts-, Medizin- oder Pflegeberatung. Für persönliche Entscheidungen wende dich immer
-              an qualifizierte Fachleute.
+        <div className="px-6 py-5 space-y-4">
+          <div className="bg-amber-500/10 border border-amber-400/20 rounded-xl p-4">
+            <p className="text-amber-300 text-xs font-semibold mb-1.5">⚠️ Kein Ersatz für Fachberatung</p>
+            <p className="text-amber-200/60 text-xs leading-relaxed">
+              Dieser KI-Assistent gibt <strong className="text-amber-200/80">allgemeine Informationen</strong> –
+              keine individuelle Rechts-, Medizin- oder Pflegeberatung.
             </p>
           </div>
 
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-xs text-white/50">
             <div className="flex gap-3">
-              <span className="text-blue-500 mt-0.5">📚</span>
-              <p>
-                <strong>Woher kommen die Informationen?</strong><br />
-                Die KI wurde mit Inhalten aus öffentlichen Quellen trainiert: Pflegekassen,
-                Sozialverbänden (VdK, Caritas, AWO), Landesverbänden, Bundesministerien und
-                Fachportalen. Die Informationen spiegeln den allgemeinen Stand wider – individuelle
-                Fälle können abweichen.
-              </p>
+              <span className="text-amber-500/70 mt-0.5 flex-shrink-0">📚</span>
+              <p><strong className="text-white/70">Woher kommen die Informationen?</strong><br />
+              Aus öffentlich zugänglichen Quellen: Pflegekassen, VdK, Caritas, AWO, Bundesministerien
+              und Fachportalen. Allgemeiner Stand – individuelle Fälle können abweichen.</p>
             </div>
             <div className="flex gap-3">
-              <span className="text-blue-500 mt-0.5">⚖️</span>
-              <p>
-                <strong>Keine Haftung</strong><br />
-                Alle Angaben sind ohne Gewähr. Gesetze, Leistungen und Regelungen ändern sich.
-                Bitte informiere dich vor wichtigen Entscheidungen immer bei deiner Pflegekasse
-                oder einem anerkannten Beratungsangebot.
-              </p>
+              <span className="text-amber-500/70 mt-0.5 flex-shrink-0">⚖️</span>
+              <p><strong className="text-white/70">Keine Haftung</strong><br />
+              Alle Angaben sind ohne Gewähr. Gesetze und Leistungen ändern sich. Bitte informiere
+              dich vor wichtigen Entscheidungen bei deiner Pflegekasse oder einem Beratungsangebot.</p>
             </div>
             <div className="flex gap-3">
-              <span className="text-blue-500 mt-0.5">🔒</span>
-              <p>
-                <strong>Datenschutz</strong><br />
-                Teile keine persönlichen Daten wie vollständige Namen, Versicherungsnummern oder
-                Adressen im Chat.
-              </p>
+              <span className="text-amber-500/70 mt-0.5 flex-shrink-0">🔒</span>
+              <p><strong className="text-white/70">Datenschutz</strong><br />
+              Teile keine persönlichen Daten wie vollständige Namen oder Versicherungsnummern.</p>
             </div>
           </div>
 
-          <div className="bg-blue-50 rounded-xl p-4">
-            <p className="text-blue-800 text-xs font-medium mb-2">Empfohlene Beratungsstellen:</p>
-            <div className="grid grid-cols-2 gap-1.5 text-xs text-blue-700">
+          <div className="bg-white/4 rounded-xl p-3.5">
+            <p className="text-white/35 text-xs font-medium mb-2">Kostenlose Beratungsstellen:</p>
+            <div className="grid grid-cols-2 gap-1 text-xs text-white/30">
               <span>• Pflegestützpunkte</span>
               <span>• VdK Deutschland</span>
               <span>• Caritas / AWO</span>
-              <span>• Pflegekasse (0800er)</span>
+              <span>• Pflegekasse (0800)</span>
             </div>
           </div>
 
           {/* Checkboxes */}
-          <div className="space-y-3 pt-2">
-            <label className="flex items-start gap-3 cursor-pointer group">
-              <div
-                onClick={() => setChecked1(!checked1)}
-                className={`mt-0.5 w-5 h-5 rounded flex-shrink-0 border-2 flex items-center justify-center transition-all ${
-                  checked1 ? 'bg-blue-600 border-blue-600' : 'border-gray-300 group-hover:border-blue-400'
-                }`}
-              >
-                {checked1 && <Check size={12} className="text-white" strokeWidth={3} />}
-              </div>
-              <p className="text-sm text-gray-700 leading-snug">
-                Ich verstehe, dass dies <strong>keine professionelle Rechts- oder
-                Pflegeberatung</strong> ist und hole bei wichtigen Entscheidungen
-                zusätzlich Fachrat ein.
-              </p>
-            </label>
-
-            <label className="flex items-start gap-3 cursor-pointer group">
-              <div
-                onClick={() => setChecked2(!checked2)}
-                className={`mt-0.5 w-5 h-5 rounded flex-shrink-0 border-2 flex items-center justify-center transition-all ${
-                  checked2 ? 'bg-blue-600 border-blue-600' : 'border-gray-300 group-hover:border-blue-400'
-                }`}
-              >
-                {checked2 && <Check size={12} className="text-white" strokeWidth={3} />}
-              </div>
-              <p className="text-sm text-gray-700 leading-snug">
-                Ich habe die Hinweise zu <strong>Haftungsausschluss und Datenschutz</strong> gelesen
-                und akzeptiere, dass alle Informationen ohne Gewähr sind.
-              </p>
-            </label>
+          <div className="space-y-3 pt-1">
+            {[
+              { checked: checked1, set: setChecked1, label: 'Ich verstehe, dass dies keine professionelle Rechts- oder Pflegeberatung ist und hole bei wichtigen Entscheidungen Fachrat ein.' },
+              { checked: checked2, set: setChecked2, label: 'Ich habe den Haftungsausschluss gelesen und akzeptiere, dass alle Informationen ohne Gewähr sind.' },
+            ].map(({ checked, set, label }, i) => (
+              <label key={i} className="flex items-start gap-3 cursor-pointer group">
+                <div
+                  onClick={() => set(!checked)}
+                  className={`mt-0.5 w-5 h-5 rounded flex-shrink-0 border flex items-center justify-center transition-all ${
+                    checked
+                      ? 'bg-amber-500 border-amber-500'
+                      : 'border-white/20 group-hover:border-amber-400/40'
+                  }`}
+                >
+                  {checked && <Check size={11} className="text-white" strokeWidth={3} />}
+                </div>
+                <p className="text-xs text-white/50 leading-snug group-hover:text-white/65 transition-colors">
+                  {label}
+                </p>
+              </label>
+            ))}
           </div>
         </div>
 
@@ -122,8 +99,8 @@ export default function DisclaimerModal({ onAccept }: DisclaimerModalProps) {
             disabled={!canProceed}
             className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all ${
               canProceed
-                ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-amber-500 text-white hover:bg-amber-400 shadow-lg shadow-amber-900/40'
+                : 'bg-white/5 text-white/25 cursor-not-allowed border border-white/8'
             }`}
           >
             {canProceed ? '✓ Verstanden – Assistent starten' : 'Bitte beide Punkte bestätigen'}

@@ -11,11 +11,7 @@ interface Message {
   content: string;
 }
 
-interface ChatInterfaceProps {
-  modeId: ModeId;
-}
-
-export default function ChatInterface({ modeId }: ChatInterfaceProps) {
+export default function ChatInterface({ modeId }: { modeId: ModeId }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -44,67 +40,56 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
     }
   };
 
-  const sendMessage = useCallback(
-    async (text: string) => {
-      const trimmed = text.trim();
-      if (!trimmed || isLoading) return;
+  const sendMessage = useCallback(async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || isLoading) return;
 
-      setError(null);
-      const userMessage: Message = { role: 'user', content: trimmed };
-      const newMessages = [...messages, userMessage];
-      setMessages(newMessages);
-      setInput('');
-      setIsLoading(true);
+    setError(null);
+    const userMessage: Message = { role: 'user', content: trimmed };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInput('');
+    setIsLoading(true);
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
-      if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    setMessages([...newMessages, { role: 'assistant', content: '' }]);
+    abortRef.current = new AbortController();
 
-      const placeholderMsg: Message = { role: 'assistant', content: '' };
-      setMessages([...newMessages, placeholderMsg]);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages, modeId }),
+        signal: abortRef.current.signal,
+      });
 
-      abortRef.current = new AbortController();
+      if (!response.ok || !response.body) throw new Error('API error');
 
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: newMessages, modeId }),
-          signal: abortRef.current.signal,
-        });
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = '';
 
-        if (!response.ok || !response.body) {
-          throw new Error('API-Fehler');
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulated = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          accumulated += decoder.decode(value, { stream: true });
-          setMessages([...newMessages, { role: 'assistant', content: accumulated }]);
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          setMessages((prev) => {
-            const last = prev[prev.length - 1];
-            if (last?.role === 'assistant' && last.content === '') {
-              return prev.slice(0, -1);
-            }
-            return prev;
-          });
-          return;
-        }
-        setMessages((prev) => prev.slice(0, -1));
-        setError('Keine Verbindung zum KI-Assistenten. Bitte überprüfe deine Internetverbindung und versuche es erneut.');
-      } finally {
-        setIsLoading(false);
-        abortRef.current = null;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        setMessages([...newMessages, { role: 'assistant', content: accumulated }]);
       }
-    },
-    [messages, modeId, isLoading]
-  );
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          return last?.role === 'assistant' && last.content === '' ? prev.slice(0, -1) : prev;
+        });
+        return;
+      }
+      setMessages((prev) => prev.slice(0, -1));
+      setError('Keine Verbindung zum KI-Assistenten. Bitte versuche es erneut.');
+    } finally {
+      setIsLoading(false);
+      abortRef.current = null;
+    }
+  }, [messages, modeId, isLoading]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -113,22 +98,10 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
     }
   };
 
-  const handleStop = () => {
-    abortRef.current?.abort();
-    setIsLoading(false);
-  };
-
-  const handleClear = () => {
-    abortRef.current?.abort();
-    setMessages([]);
-    setIsLoading(false);
-    setError(null);
-  };
-
   return (
     <div className="flex flex-col h-full">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
         {messages.length === 0 ? (
           <StarterQuestions
             questions={activeMode.starterQuestions}
@@ -146,14 +119,14 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
             ))}
             {isLoading && messages[messages.length - 1]?.content === '' && (
               <div className="flex gap-3">
-                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs">KI</span>
+                <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                  <span className="text-amber-300 text-xs font-bold">KI</span>
                 </div>
-                <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-slate-100">
-                  <div className="flex gap-1 items-center h-5">
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
+                <div className="glass-light rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg shadow-black/20">
+                  <div className="flex gap-1.5 items-center h-5">
+                    <div className="w-1.5 h-1.5 bg-amber-600 rounded-full typing-dot" />
+                    <div className="w-1.5 h-1.5 bg-amber-600 rounded-full typing-dot" />
+                    <div className="w-1.5 h-1.5 bg-amber-600 rounded-full typing-dot" />
                   </div>
                 </div>
               </div>
@@ -161,35 +134,31 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
           </>
         )}
 
-        {/* Error message */}
         {error && (
-          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 bg-red-900/30 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-300">
+            <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
-
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Disclaimer strip above input */}
+      {/* Disclaimer strip */}
       {messages.length > 0 && (
-        <div className="px-4 pb-1">
-          <p className="text-xs text-slate-400 text-center">
-            ⚠️ Allgemeine Informationen – kein Ersatz für individuelle Fachberatung
-          </p>
-        </div>
+        <p className="text-center text-xs text-white/20 px-4 pb-1">
+          ⚠️ Allgemeine Informationen – kein Ersatz für individuelle Fachberatung
+        </p>
       )}
 
       {/* Input */}
-      <div className="bg-white border-t border-slate-100 px-4 py-3">
+      <div className="glass-dark border-t-0 rounded-b-none px-4 py-3">
         {messages.length > 0 && (
           <div className="flex justify-end mb-2">
             <button
-              onClick={handleClear}
-              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-500 transition-colors"
+              onClick={() => { abortRef.current?.abort(); setMessages([]); setIsLoading(false); setError(null); }}
+              className="flex items-center gap-1.5 text-xs text-white/25 hover:text-red-400 transition-colors"
             >
-              <Trash2 size={12} />
+              <Trash2 size={11} />
               Gespräch löschen
             </button>
           </div>
@@ -201,28 +170,33 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
             value={input}
             onChange={(e) => { setInput(e.target.value); adjustTextarea(); }}
             onKeyDown={handleKeyDown}
-            placeholder={`Deine Frage zu "${activeMode.title}"…`}
+            placeholder={`Deine Frage zu „${activeMode.title}"…`}
             rows={1}
             disabled={isLoading}
-            className="flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent focus:bg-white transition-all"
+            className="flex-1 resize-none rounded-xl bg-white/8 border border-white/10
+                       px-4 py-2.5 text-sm text-white/90 placeholder-white/25
+                       focus:outline-none focus:ring-1 focus:ring-amber-400/40 focus:border-amber-400/30
+                       focus:bg-white/12 transition-all"
             style={{ minHeight: '42px', maxHeight: '120px' }}
           />
 
           {isLoading ? (
             <button
-              onClick={handleStop}
-              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors border border-red-200"
-              title="Stoppen"
+              onClick={() => { abortRef.current?.abort(); setIsLoading(false); }}
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl
+                         bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors border border-red-500/30"
             >
-              <Square size={14} fill="currentColor" />
+              <Square size={13} fill="currentColor" />
             </button>
           ) : (
             <button
               onClick={() => sendMessage(input)}
               disabled={!input.trim()}
-              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl
+                         bg-amber-500/80 text-white hover:bg-amber-500 disabled:opacity-30
+                         disabled:cursor-not-allowed transition-colors shadow-lg shadow-amber-900/30"
             >
-              <Send size={16} />
+              <Send size={15} />
             </button>
           )}
         </div>

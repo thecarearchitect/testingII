@@ -16,29 +16,22 @@ export default function StarterQuestions({
   modeTitle,
   modeIcon,
   modeSubtitle,
-  modeColor,
-  modeBgColor,
 }: StarterQuestionsProps) {
   return (
     <div className="flex flex-col justify-center h-full px-4 py-6 gap-5 max-w-2xl mx-auto w-full">
-      {/* Mode intro card */}
-      <div className={`${modeBgColor} rounded-2xl p-5`}>
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl">{modeIcon}</span>
-          <div>
-            <h2 className={`font-bold text-base ${modeColor}`}>{modeTitle}</h2>
-            <p className="text-slate-500 text-xs mt-0.5">{modeSubtitle}</p>
-          </div>
-        </div>
-        <p className="text-slate-600 text-xs leading-relaxed">
-          Ich beantworte deine Fragen auf Basis öffentlich verfügbaren Fachwissens aus deutschen
-          Pflegekassen, Sozialverbänden und Behörden.
+      {/* Intro */}
+      <div className="glass rounded-2xl p-5 text-center">
+        <div className="text-4xl mb-3">{modeIcon}</div>
+        <h2 className="font-bold text-white/90 text-base">{modeTitle}</h2>
+        <p className="text-white/40 text-xs mt-1">{modeSubtitle}</p>
+        <p className="text-white/30 text-xs mt-3 leading-relaxed">
+          Fachwissen aus deutschen Pflegekassen, Sozialverbänden & Behörden – komprimiert für dich
         </p>
       </div>
 
-      {/* Quick start questions */}
+      {/* Starter questions */}
       <div>
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5 px-1">
+        <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-2.5 px-1">
           Häufige Fragen
         </p>
         <div className="space-y-2">
@@ -46,10 +39,12 @@ export default function StarterQuestions({
             <button
               key={i}
               onClick={() => onSelect(question)}
-              className="w-full text-left px-4 py-3 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl text-sm text-slate-700 hover:text-blue-700 transition-all duration-150 shadow-sm group"
+              className="w-full text-left px-4 py-3 glass rounded-xl text-sm text-white/70
+                         hover:bg-amber-500/15 hover:text-white hover:border-amber-400/30
+                         transition-all duration-150 group"
             >
-              <div className="flex items-start gap-2">
-                <span className="text-blue-300 group-hover:text-blue-500 transition-colors mt-0.5 flex-shrink-0">›</span>
+              <div className="flex items-start gap-2.5">
+                <span className="text-amber-500/50 group-hover:text-amber-400 transition-colors mt-0.5 flex-shrink-0">›</span>
                 <span>{question}</span>
               </div>
             </button>
@@ -57,7 +52,7 @@ export default function StarterQuestions({
         </div>
       </div>
 
-      <p className="text-xs text-slate-400 text-center">
+      <p className="text-xs text-white/25 text-center">
         Oder schreibe deine eigene Frage unten
       </p>
     </div>
