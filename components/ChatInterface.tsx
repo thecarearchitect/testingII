@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Trash2, RotateCcw } from 'lucide-react';
+import { Send, Trash2, Square, AlertCircle } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import StarterQuestions from './StarterQuestions';
 import { MODES, ModeId } from '@/lib/modes';
@@ -19,6 +19,7 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -28,6 +29,7 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
   useEffect(() => {
     setMessages([]);
     setInput('');
+    setError(null);
   }, [modeId]);
 
   useEffect(() => {
@@ -47,15 +49,14 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
       const trimmed = text.trim();
       if (!trimmed || isLoading) return;
 
+      setError(null);
       const userMessage: Message = { role: 'user', content: trimmed };
       const newMessages = [...messages, userMessage];
       setMessages(newMessages);
       setInput('');
       setIsLoading(true);
 
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-      }
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
       const placeholderMsg: Message = { role: 'assistant', content: '' };
       setMessages([...newMessages, placeholderMsg]);
@@ -71,7 +72,7 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
         });
 
         if (!response.ok || !response.body) {
-          throw new Error('Fehler beim Laden der Antwort');
+          throw new Error('API-Fehler');
         }
 
         const reader = response.body.getReader();
@@ -82,19 +83,21 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
           const { done, value } = await reader.read();
           if (done) break;
           accumulated += decoder.decode(value, { stream: true });
-          const current = accumulated;
-          setMessages([...newMessages, { role: 'assistant', content: current }]);
+          setMessages([...newMessages, { role: 'assistant', content: accumulated }]);
         }
       } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') return;
-        setMessages([
-          ...newMessages,
-          {
-            role: 'assistant',
-            content:
-              'Es ist ein Fehler aufgetreten. Bitte versuche es erneut. Falls das Problem weiterhin besteht, überprüfe deine Internetverbindung.',
-          },
-        ]);
+        if (err instanceof Error && err.name === 'AbortError') {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === 'assistant' && last.content === '') {
+              return prev.slice(0, -1);
+            }
+            return prev;
+          });
+          return;
+        }
+        setMessages((prev) => prev.slice(0, -1));
+        setError('Keine Verbindung zum KI-Assistenten. Bitte überprüfe deine Internetverbindung und versuche es erneut.');
       } finally {
         setIsLoading(false);
         abortRef.current = null;
@@ -119,12 +122,13 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
     abortRef.current?.abort();
     setMessages([]);
     setIsLoading(false);
+    setError(null);
   };
 
   return (
     <div className="flex flex-col h-full">
-      {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
         {messages.length === 0 ? (
           <StarterQuestions
             questions={activeMode.starterQuestions}
@@ -132,6 +136,8 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
             modeTitle={activeMode.title}
             modeIcon={activeMode.icon}
             modeSubtitle={activeMode.subtitle}
+            modeColor={activeMode.color}
+            modeBgColor={activeMode.bgColor}
           />
         ) : (
           <>
@@ -140,78 +146,86 @@ export default function ChatInterface({ modeId }: ChatInterfaceProps) {
             ))}
             {isLoading && messages[messages.length - 1]?.content === '' && (
               <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <span className="text-white text-sm">🤝</span>
+                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xs">KI</span>
                 </div>
-                <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100">
+                <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-slate-100">
                   <div className="flex gap-1 items-center h-5">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full typing-dot" />
-                    <div className="w-2 h-2 bg-blue-400 rounded-full typing-dot" />
-                    <div className="w-2 h-2 bg-blue-400 rounded-full typing-dot" />
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
                   </div>
                 </div>
               </div>
             )}
           </>
         )}
+
+        {/* Error message */}
+        {error && (
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
-      <div className="border-t border-gray-100 bg-white px-4 py-3">
+      {/* Disclaimer strip above input */}
+      {messages.length > 0 && (
+        <div className="px-4 pb-1">
+          <p className="text-xs text-slate-400 text-center">
+            ⚠️ Allgemeine Informationen – kein Ersatz für individuelle Fachberatung
+          </p>
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="bg-white border-t border-slate-100 px-4 py-3">
         {messages.length > 0 && (
-          <div className="flex gap-2 mb-2">
+          <div className="flex justify-end mb-2">
             <button
               onClick={handleClear}
-              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-500 transition-colors"
             >
-              <Trash2 size={13} />
+              <Trash2 size={12} />
               Gespräch löschen
             </button>
           </div>
         )}
 
         <div className="flex gap-2 items-end">
-          <div className="flex-1 relative">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                adjustTextarea();
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder={`Schreibe deine Frage zu "${activeMode.title}"…`}
-              rows={1}
-              className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all"
-              disabled={isLoading}
-              style={{ minHeight: '44px', maxHeight: '120px' }}
-            />
-          </div>
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => { setInput(e.target.value); adjustTextarea(); }}
+            onKeyDown={handleKeyDown}
+            placeholder={`Deine Frage zu "${activeMode.title}"…`}
+            rows={1}
+            disabled={isLoading}
+            className="flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent focus:bg-white transition-all"
+            style={{ minHeight: '42px', maxHeight: '120px' }}
+          />
 
           {isLoading ? (
             <button
               onClick={handleStop}
-              className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-xl bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors border border-red-200"
               title="Stoppen"
             >
-              <RotateCcw size={18} />
+              <Square size={14} fill="currentColor" />
             </button>
           ) : (
             <button
               onClick={() => sendMessage(input)}
               disabled={!input.trim()}
-              className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
-              title="Senden (Enter)"
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              <Send size={18} />
+              <Send size={16} />
             </button>
           )}
         </div>
-
-        <p className="text-xs text-gray-400 mt-2 text-center">
-          KI-Assistent für pflegende Angehörige · Kein Ersatz für professionelle Beratung
-        </p>
       </div>
     </div>
   );
