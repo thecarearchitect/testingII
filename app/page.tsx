@@ -166,34 +166,50 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="relative z-10 text-center pt-16 pb-10 px-6 max-w-3xl mx-auto">
-        <div className="hero-float inline-block mb-6 fade-up fade-up-1">
-          <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-amber-400/20 to-orange-500/20
-                          border border-amber-400/30 flex items-center justify-center shadow-2xl shadow-amber-900/30">
-            <span className="text-4xl">🤝</span>
-          </div>
-        </div>
-
-        <h1 className="font-fraunces text-4xl sm:text-5xl lg:text-6xl font-light leading-tight mb-4 fade-up fade-up-2">
-          <span className="text-white/90">Du bist</span>
+      <section
+        className="relative z-10 text-center px-6 max-w-3xl mx-auto fade-up fade-up-1"
+        style={{ paddingTop: 'clamp(64px, 12vw, 120px)', paddingBottom: 'clamp(56px, 10vw, 120px)' }}
+      >
+        <h1
+          className="font-fraunces font-light leading-tight mb-6"
+          style={{ fontSize: 'clamp(36px, 5.5vw, 56px)', color: '#f0ede8', letterSpacing: '-0.02em' }}
+        >
+          Der Pflegegrad, der dir zusteht.
           <br />
-          <span className="gradient-text font-normal italic">nicht allein.</span>
+          <span style={{
+            background: 'linear-gradient(135deg, #fde68a 0%, #d4860a 50%, #fb923c 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontStyle: 'italic',
+          }}>
+            Nicht der, den sie dir gegeben haben.
+          </span>
         </h1>
 
-        <p className="text-white/45 text-base sm:text-lg leading-relaxed max-w-xl mx-auto mb-8 fade-up fade-up-3">
-          Pflege ist eine der schwersten Aufgaben, die es gibt. Ich helfe dir mit Formularen,
-          Widersprüchen, rechtlichen Fragen – und bin einfach da, wenn du eine Antwort brauchst.
+        <p
+          className="leading-relaxed max-w-lg mx-auto mb-10"
+          style={{ fontSize: '18px', color: '#a09a90' }}
+        >
+          Jede dritte Einstufung ist zu niedrig.
+          <br className="hidden sm:block" />
+          Deine KI kennt die Regeln – und hilft dir, sie zu nutzen.
         </p>
 
         <button
           onClick={() => openChat('allgemein')}
-          className="fade-up fade-up-4 inline-flex items-center gap-2 px-6 py-3.5 rounded-full
-                     bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-sm
-                     hover:from-amber-400 hover:to-orange-400 transition-all duration-200
-                     shadow-xl shadow-amber-900/40 hover:shadow-amber-800/50 hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 font-semibold transition-all duration-200
+                     hover:-translate-y-0.5 hover:brightness-110"
+          style={{
+            background: '#d4860a',
+            color: '#fff',
+            borderRadius: '9999px',
+            padding: '16px 32px',
+            fontSize: '15px',
+            boxShadow: '0 8px 32px rgba(212,134,10,0.35)',
+          }}
         >
-          Gespräch starten
-          <ArrowRight size={16} />
+          Meine Einstufung prüfen →
         </button>
       </section>
 
