@@ -204,9 +204,20 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
             <button
               onClick={() => sendMessage(input)}
               disabled={!input.trim()}
-              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl
-                         bg-amber-500/80 text-white hover:bg-amber-500 disabled:opacity-30
-                         disabled:cursor-not-allowed transition-colors shadow-lg shadow-amber-900/30"
+              style={{
+                flexShrink: 0, width: 40, height: 40,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: 12, border: 'none',
+                cursor: input.trim() ? 'pointer' : 'not-allowed',
+                background: '#d4860a', color: '#fff',
+                opacity: input.trim() ? 1 : 0.3,
+                transition: 'background .15s ease, opacity .15s ease',
+                boxShadow: '0 4px 16px rgba(212,134,10,0.30)',
+              }}
+              onMouseEnter={e => { if (input.trim()) e.currentTarget.style.background = '#e8950a'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#d4860a'; }}
+              onMouseDown={e => { if (input.trim()) e.currentTarget.style.background = '#c07808'; }}
+              onMouseUp={e => { if (input.trim()) e.currentTarget.style.background = '#e8950a'; }}
             >
               <Send size={15} />
             </button>
