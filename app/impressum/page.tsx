@@ -51,7 +51,7 @@ export default function ImpressumPage() {
         </Section>
 
         <Section title="Kontakt">
-          <Field label="E-Mail" value="friese.markus2@googlemail.com" />
+          <Field label="E-Mail" value="pflegeassistentai@gmail.com" />
           <p style={hint}>
             Hinweis: Eine Telefonnummer ist nach § 5 TMG empfohlen. Bei reinen Online-Diensten bestehen unter bestimmten Umständen Ausnahmen — bitte rechtlich prüfen lassen.
           </p>

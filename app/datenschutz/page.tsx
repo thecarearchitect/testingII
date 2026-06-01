@@ -49,7 +49,7 @@ export default function DatenschutzPage() {
         <Section title="1. Verantwortlicher">
           <Field label="Name" value="Markus Friese" />
           <Field label="Anschrift" value="Jürgen-Toepfer-Straße 51, 22763 Hamburg" />
-          <Field label="E-Mail" value="friese.markus2@googlemail.com" />
+          <Field label="E-Mail" value="pflegeassistentai@gmail.com" />
           <p style={note}>
             Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte wenden Sie sich bitte an die oben genannte E-Mail-Adresse.
           </p>
@@ -96,7 +96,7 @@ export default function DatenschutzPage() {
           }}>
             <p style={{ ...note, marginTop: 0, color: '#a09a90', fontStyle: 'normal' }}>
               <strong style={{ color: '#d4860a' }}>Hinweis AVV:</strong> Ob für den produktiven Betrieb ein Auftragsverarbeitungsvertrag (AVV) mit Anthropic erforderlich ist, ist noch zu prüfen und wird nachgereicht. Bitte kontaktieren Sie uns unter{' '}
-              <span style={{ color: '#d4860a' }}>friese.markus2@googlemail.com</span> bei Fragen dazu.
+              <span style={{ color: '#d4860a' }}>pflegeassistentai@gmail.com</span> bei Fragen dazu.
             </p>
           </div>
         </Section>
@@ -151,7 +151,7 @@ export default function DatenschutzPage() {
           </ul>
           <p style={{ ...body, marginTop: 12 }}>
             Zur Ausübung Ihrer Rechte:{' '}
-            <span style={{ color: '#d4860a' }}>friese.markus2@googlemail.com</span>
+            <span style={{ color: '#d4860a' }}>pflegeassistentai@gmail.com</span>
           </p>
         </Section>
 
