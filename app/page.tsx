@@ -8,6 +8,7 @@ import DisclaimerModal from '@/components/DisclaimerModal';
 import SettingsPanel, { UserSettings } from '@/components/SettingsPanel';
 import { ModeId, MODES } from '@/lib/modes';
 import SparkleIcon from '@/components/SparkleIcon';
+import ModeIcon from '@/components/ModeIcon';
 
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
@@ -79,8 +80,8 @@ export default function Home() {
   if (view === 'chat') {
     const mode = MODES.find(m => m.id === activeMode)!;
     return (
-      <div className="flex flex-col h-screen overflow-hidden relative">
-        <div className="orb orb-1" /><div className="orb orb-2" /><div className="orb orb-3" />
+      <div className="flex flex-col h-screen overflow-hidden relative"
+           style={{ background: 'radial-gradient(ellipse at 50% 0%, #150f1f 0%, #0a0a0f 50%)' }}>
 
         {showSettings && (
           <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />
@@ -107,7 +108,7 @@ export default function Home() {
                         ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40'
                         : 'text-white/30 hover:text-white/60 hover:bg-white/5'
                     }`}
-                  >{m.icon}</button>
+                  ><ModeIcon modeId={m.id} size={13} color={m.id === activeMode ? '#fbbf24' : 'currentColor'} /></button>
                 ))}
               </div>
               <button onClick={() => setShowSettings(true)}
@@ -125,7 +126,7 @@ export default function Home() {
         </header>
 
         <div className="relative z-10 max-w-3xl mx-auto w-full px-4 pt-3 flex-shrink-0 flex items-center gap-2">
-          <span className="text-base">{mode.icon}</span>
+          <ModeIcon modeId={activeMode} size={14} color="#d4860a" />
           <span className="text-xs text-white/35 font-medium">{mode.title}</span>
           {hasSettings && <span className="ml-auto text-xs text-amber-500/50">● Persönlicher Kontext aktiv</span>}
         </div>

@@ -117,11 +117,9 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
           <StarterQuestions
             questions={activeMode.starterQuestions}
             onSelect={sendMessage}
+            modeId={modeId}
             modeTitle={activeMode.title}
-            modeIcon={activeMode.icon}
             modeSubtitle={activeMode.subtitle}
-            modeColor={activeMode.color}
-            modeBgColor={activeMode.bgColor}
           />
         ) : (
           <>
