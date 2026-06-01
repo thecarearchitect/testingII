@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, Settings, Shield, ArrowRight, X } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
+import PaperCanvas from '@/components/PaperCanvas';
 import DisclaimerModal from '@/components/DisclaimerModal';
 import SettingsPanel, { UserSettings } from '@/components/SettingsPanel';
 import { ModeId, MODES } from '@/lib/modes';
@@ -167,50 +168,60 @@ export default function Home() {
 
       {/* Hero */}
       <section
-        className="relative z-10 text-center px-6 max-w-3xl mx-auto fade-up fade-up-1"
-        style={{ paddingTop: 'clamp(64px, 12vw, 120px)', paddingBottom: 'clamp(56px, 10vw, 120px)' }}
+        className="relative z-10 overflow-hidden"
+        style={{ background: '#0a0a0f' }}
       >
-        <h1
-          className="font-fraunces font-light leading-tight mb-6"
-          style={{ fontSize: 'clamp(36px, 5.5vw, 56px)', color: '#f0ede8', letterSpacing: '-0.02em' }}
-        >
-          Der Pflegegrad, der dir zusteht.
-          <br />
-          <span style={{
-            background: 'linear-gradient(135deg, #fde68a 0%, #d4860a 50%, #fb923c 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontStyle: 'italic',
-          }}>
-            Nicht der, den sie dir gegeben haben.
-          </span>
-        </h1>
+        {/* Canvas animation */}
+        <PaperCanvas />
 
-        <p
-          className="leading-relaxed max-w-lg mx-auto mb-10"
-          style={{ fontSize: '18px', color: '#a09a90' }}
-        >
-          Jede dritte Einstufung ist zu niedrig.{' '}
-          <br className="hidden sm:block" />
-          Deine KI kennt die Regeln – und hilft dir, sie zu nutzen.
-        </p>
+        {/* Dark overlay for readability */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(10,10,15,0.60)',
+          zIndex: 1,
+        }} />
 
-        <button
-          onClick={() => openChat('allgemein')}
-          className="inline-flex items-center gap-2 font-semibold transition-all duration-200
-                     hover:-translate-y-0.5 hover:brightness-110"
+        {/* Content */}
+        <div
+          className="relative text-center px-6 max-w-3xl mx-auto fade-up fade-up-1"
           style={{
-            background: '#d4860a',
-            color: '#fff',
-            borderRadius: '9999px',
-            padding: '16px 32px',
-            fontSize: '15px',
-            boxShadow: '0 8px 32px rgba(212,134,10,0.35)',
+            zIndex: 2,
+            paddingTop: 'clamp(80px, 14vw, 140px)',
+            paddingBottom: 'clamp(80px, 14vw, 140px)',
           }}
         >
-          Meine Einstufung prüfen →
-        </button>
+          <h1
+            className="font-fraunces font-light leading-tight mb-6"
+            style={{ fontSize: 'clamp(36px, 5.5vw, 56px)', color: '#f0ede8', letterSpacing: '-0.02em' }}
+          >
+            Ich bin für dich da.
+          </h1>
+
+          <p
+            className="leading-relaxed max-w-lg mx-auto mb-10"
+            style={{ fontSize: '18px', color: '#a09a90' }}
+          >
+            Pflege ist überwältigend.{' '}
+            <br className="hidden sm:block" />
+            Das Bürokratische muss es nicht sein.
+          </p>
+
+          <button
+            onClick={() => openChat('allgemein')}
+            className="inline-flex items-center gap-2 font-semibold transition-all duration-200
+                       hover:-translate-y-0.5 hover:brightness-110"
+            style={{
+              background: '#d4860a',
+              color: '#fff',
+              borderRadius: '9999px',
+              padding: '16px 32px',
+              fontSize: '15px',
+              boxShadow: '0 8px 32px rgba(212,134,10,0.35)',
+            }}
+          >
+            Jetzt starten →
+          </button>
+        </div>
       </section>
 
       {/* Mode cards grid */}
