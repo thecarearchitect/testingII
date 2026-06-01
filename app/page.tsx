@@ -191,7 +191,7 @@ export default function Home() {
           className="leading-relaxed max-w-lg mx-auto mb-10"
           style={{ fontSize: '18px', color: '#a09a90' }}
         >
-          Jede dritte Einstufung ist zu niedrig.
+          Jede dritte Einstufung ist zu niedrig.{' '}
           <br className="hidden sm:block" />
           Deine KI kennt die Regeln – und hilft dir, sie zu nutzen.
         </p>
