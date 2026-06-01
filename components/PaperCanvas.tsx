@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 
 const LABELS = [
   'Widerspruch', 'MDK-Gutachten', 'Pflegegrad 2',
-  '§ 15 SGB XI', 'Formular', 'Bescheid', 'Einspruch',
+  '§ 15 SGB XI', 'Formular', 'Bescheid', 'Einspruch', 'Pflegekasse',
 ];
 
 interface Paper {
@@ -24,10 +24,10 @@ function randomPaper(canvasWidth: number, startDistributed = false): Paper {
     x: Math.random() * canvasWidth,
     y: startDistributed ? Math.random() * 800 - 100 : -H - Math.random() * 300,
     rotation: (Math.random() - 0.5) * 50,
-    rotSpeed: (Math.random() - 0.5) * 0.35,
-    speed: 0.6 + Math.random() * 1.0,
+    rotSpeed: (Math.random() - 0.5) * 0.12,
+    speed: 0.25 + Math.random() * 0.4,
     label: LABELS[Math.floor(Math.random() * LABELS.length)],
-    opacity: 0.12 + Math.random() * 0.18,
+    opacity: 0.40 + Math.random() * 0.20,
   };
 }
 
@@ -79,15 +79,15 @@ export default function PaperCanvas() {
 
         // Paper body
         drawRoundRect(-W / 2, -H / 2, W, H, 3);
-        ctx.fillStyle = '#f8f8f6';
+        ctx.fillStyle = '#1e1e2e';
         ctx.fill();
-        ctx.strokeStyle = '#c8c8c4';
+        ctx.strokeStyle = '#2a2a4a';
         ctx.lineWidth = 0.8;
         ctx.stroke();
 
         // Ruled lines
-        ctx.strokeStyle = '#e0e0dc';
-        ctx.lineWidth = 0.7;
+        ctx.strokeStyle = '#252540';
+        ctx.lineWidth = 0.6;
         for (let l = 0; l < 4; l++) {
           const ly = -H / 2 + 26 + l * 11;
           ctx.beginPath();
@@ -97,8 +97,8 @@ export default function PaperCanvas() {
         }
 
         // Label
-        ctx.fillStyle = '#2a2a2a';
-        ctx.font = '600 7.5px Inter, system-ui, sans-serif';
+        ctx.fillStyle = '#3a3a5a';
+        ctx.font = '500 7px Inter, system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(p.label, 0, -H / 2 + 13);
