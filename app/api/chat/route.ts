@@ -4,6 +4,58 @@ import { NextRequest } from 'next/server';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// ── Types ──────────────────────────────────────────────────────────────────
+
+interface IncomingAttachment {
+  name: string;
+  mediaType: 'application/pdf' | 'image/jpeg' | 'image/png';
+  data: string; // base64, no prefix
+  size: number;
+}
+
+interface IncomingMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  attachment?: IncomingAttachment;
+}
+
+type ContentBlock =
+  | { type: 'text'; text: string }
+  | { type: 'document'; source: { type: 'base64'; media_type: 'application/pdf'; data: string } }
+  | { type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png'; data: string } };
+
+function toAnthropicMessages(messages: IncomingMessage[]) {
+  return messages.map((m) => {
+    if (m.role === 'assistant' || !m.attachment) {
+      return { role: m.role as 'user' | 'assistant', content: m.content };
+    }
+
+    const blocks: ContentBlock[] = [];
+
+    if (m.attachment.mediaType === 'application/pdf') {
+      blocks.push({
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: m.attachment.data },
+      });
+    } else {
+      blocks.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: m.attachment.mediaType as 'image/jpeg' | 'image/png',
+          data: m.attachment.data,
+        },
+      });
+    }
+
+    if (m.content) blocks.push({ type: 'text', text: m.content });
+
+    return { role: 'user' as const, content: blocks };
+  });
+}
+
+// ── Handler ────────────────────────────────────────────────────────────────
+
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return new Response(
@@ -17,14 +69,12 @@ export async function POST(req: NextRequest) {
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Ungültige Anfrage' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        status: 400, headers: { 'Content-Type': 'application/json' },
       });
     }
 
     const mode = MODES.find((m) => m.id === (modeId as ModeId)) ?? MODES[0];
 
-    // Build personal context block
     const personalBlock = userSettings?.personalContext?.trim()
       ? `\n\n---\nPERSÖNLICHER KONTEXT DES NUTZERS:\n${userSettings.personalContext.trim()}\n\nBerücksichtige diesen Kontext in allen Antworten. Beziehe dich darauf, wo es sinnvoll ist.`
       : '';
@@ -45,12 +95,10 @@ Formatierungshinweise:
 
     const stream = await client.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: systemPrompt,
-      messages: messages.map((m: { role: string; content: string }) => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-      })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      messages: toAnthropicMessages(messages as IncomingMessage[]) as any,
     });
 
     const encoder = new TextEncoder();

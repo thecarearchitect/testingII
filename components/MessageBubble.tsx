@@ -1,14 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, FileText, Image } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import SparkleIcon from './SparkleIcon';
 
+interface Attachment {
+  name: string;
+  size: number;
+  mediaType: string;
+}
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  attachment?: Attachment;
 }
 
 export default function MessageBubble({ message }: { message: Message }) {
@@ -22,18 +29,40 @@ export default function MessageBubble({ message }: { message: Message }) {
   };
 
   if (!isAssistant) {
+    const isAutoAnalysis = !!message.attachment && message.content.startsWith('Bitte analysiere dieses Dokument');
+    const isPdf = message.attachment?.mediaType === 'application/pdf';
+    const AttachIcon = isPdf ? FileText : Image;
+
     return (
       <div className="flex justify-end message-enter">
-        <div style={{
-          maxWidth: '78%',
-          background: 'rgba(212,134,10,0.75)',
-          border: '1px solid rgba(212,134,10,0.35)',
-          borderRadius: '16px 16px 4px 16px',
-          padding: '12px 16px',
-        }}>
-          <p style={{ fontSize: 14, color: '#fff', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-            {message.content}
-          </p>
+        <div style={{ maxWidth: '78%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          {/* Attachment badge */}
+          {message.attachment && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'rgba(212,134,10,0.12)',
+              border: '1px solid rgba(212,134,10,0.30)',
+              borderRadius: 8, padding: '5px 10px',
+            }}>
+              <AttachIcon size={12} color="#d4860a" />
+              <span style={{ fontSize: 12, color: '#d4860a', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {message.attachment.name}
+              </span>
+            </div>
+          )}
+          {/* Message bubble — hide when it's just the auto-analysis boilerplate */}
+          {!isAutoAnalysis && (
+            <div style={{
+              background: 'rgba(212,134,10,0.75)',
+              border: '1px solid rgba(212,134,10,0.35)',
+              borderRadius: '16px 16px 4px 16px',
+              padding: '12px 16px',
+            }}>
+              <p style={{ fontSize: 14, color: '#fff', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                {message.content}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
