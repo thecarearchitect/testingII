@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PflegeAssistent KI – Der Pflegegrad, der dir zusteht.</title>
+  <meta name="description" content="Dein KI-Begleiter durch den Pflegedschungel. Pflegegrade einschätzen, Widersprüche formulieren, Rechte kennen." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Custom properties ──────────────────────── */
+    :root {
+      --bg:           #0a0a0f;
+      --bg-2:         #0f0f18;
+      --bg-card:      #13131e;
+      --bg-card-h:    #181826;
+      --text:         #f0ede8;
+      --muted:        #7a7588;
+      --subtle:       #4a4558;
+      --accent:       #f59e0b;
+      --accent-2:     #fb923c;
+      --accent-soft:  rgba(245,158,11,.12);
+      --accent-glow:  rgba(245,158,11,.20);
+      --border:       rgba(255,255,255,.06);
+      --border-h:     rgba(255,255,255,.12);
+      --radius:       16px;
+      --radius-lg:    24px;
+      --serif:        'DM Serif Display', Georgia, serif;
+      --sans:         'Inter', system-ui, sans-serif;
+      --max:          1120px;
+      --gap:          clamp(40px, 6vw, 80px);
+    }
+
+    /* ─── Reset ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { font-family: inherit; cursor: pointer; border: none; }
+
+    /* ─── Layout helpers ─────────────────────────── */
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 48px);
+    }
+    .section { padding: var(--gap) 0; }
+
+    /* ─── Scroll-reveal (hidden by default) ─────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: .10s; }
+    .reveal-delay-2 { transition-delay: .20s; }
+    .reveal-delay-3 { transition-delay: .30s; }
+    .reveal-delay-4 { transition-delay: .40s; }
+    .reveal-delay-5 { transition-delay: .50s; }
+
+    /* ─── NAV ────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      transition: background .3s, backdrop-filter .3s, border-color .3s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(10,10,15,.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-color: var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .9rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .logo-icon {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(245,158,11,.25), rgba(251,146,60,.15));
+      border: 1px solid rgba(245,158,11,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .logo-text { color: var(--text); }
+    .logo-accent { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: .875rem;
+      color: var(--muted);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ─── Buttons ────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: .875rem;
+      font-weight: 600;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0a0a0f;
+      box-shadow: 0 8px 32px rgba(245,158,11,.30);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(245,158,11,.40);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--bg-card);
+      color: var(--text);
+      border-color: var(--border-h);
+    }
+    .btn-large {
+      padding: 16px 32px;
+      font-size: 1rem;
+      border-radius: 100px;
+    }
+
+    /* ─── Eyebrow label ──────────────────────────── */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      padding: 6px 14px;
+      border: 1px solid rgba(245,158,11,.25);
+      border-radius: 100px;
+      background: rgba(245,158,11,.06);
+      margin-bottom: 24px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .5; transform: scale(.7); }
+    }
+
+    /* ─── Section labels ─────────────────────────── */
+    .section-label {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--subtle);
+      margin-bottom: 16px;
+    }
+
+    /* ─── HERO ───────────────────────────────────── */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 20%, rgba(120,60,220,.12) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 85% 10%, rgba(245,158,11,.08) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 50% at 50% 100%, rgba(251,100,30,.10) 0%, transparent 60%);
+      animation: hero-shift 20s ease-in-out infinite alternate;
+    }
+    @keyframes hero-shift {
+      0%   { opacity: .8; }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      animation: float-orb 15s ease-in-out infinite;
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(120,60,220,.08) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation-duration: 18s;
+    }
+    .hero-orb-2 {
+      width: 500px; height: 400px;
+      background: radial-gradient(circle, rgba(245,158,11,.07) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation-delay: -7s;
+      animation-duration: 22s;
+    }
+    @keyframes float-orb {
+      0%,100% { transform: translate(0,0); }
+      33%      { transform: translate(40px,-30px); }
+      66%      { transform: translate(-30px,20px); }
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 820px;
+    }
+    .hero-h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      line-height: 1.08;
+      letter-spacing: -.02em;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+    .hero-h1 em {
+      font-style: italic;
+      background: linear-gradient(135deg, #fde68a 0%, var(--accent) 45%, var(--accent-2) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-stats {
+      display: flex;
+      gap: clamp(24px, 5vw, 56px);
+      justify-content: center;
+      margin-top: 64px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    /* ─── PROBLEM ────────────────────────────────── */
+    #problem {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .problem-grid {
+      display: grid;
+      gap: 0;
+    }
+    .pain-item {
+      display: flex;
+      align-items: flex-start;
+      gap: clamp(20px, 4vw, 48px);
+      padding: clamp(28px, 4vw, 48px) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pain-item:last-child { border-bottom: none; }
+    .pain-num {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--subtle);
+      flex-shrink: 0;
+      line-height: 1;
+      width: 64px;
+      text-align: right;
+    }
+    .pain-body {}
+    .pain-title {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      line-height: 1.2;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .pain-sub {
+      color: var(--muted);
+      font-size: .95rem;
+      max-width: 560px;
+    }
+
+    /* ─── HOW IT WORKS ───────────────────────────── */
+    #how {
+      text-align: center;
+    }
+    .how-headline {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .how-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 64px;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(28px, 4vw, 40px);
+      text-align: left;
+      position: relative;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .step:hover {
+      border-color: var(--border-h);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 1px solid rgba(245,158,11,.25);
+      font-weight: 700;
+      font-size: .875rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .step-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+    .step h3 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .step p {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ─── FEATURES ───────────────────────────────── */
+    #features {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .features-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+    .features-headline {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      max-width: 520px;
+    }
+    .features-note {
+      font-size: .875rem;
+      color: var(--muted);
+      max-width: 280px;
+      text-align: right;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(24px, 3vw, 36px);
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .feature-card:hover {
+      border-color: var(--border-h);
+      background: var(--bg-card-h);
+      transform: translateY(-4px);
+      box-shadow: 0 24px 60px rgba(0,0,0,.4);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-bottom: 18px;
+      display: block;
+    }
+    .feature-card h3 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .feature-card p {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .feature-tag {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    /* ─── TRUST ──────────────────────────────────── */
+    #trust {}
+    .trust-statement {
+      max-width: 760px;
+      margin: 0 auto 72px;
+      text-align: center;
+    }
+    .trust-quote {
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .trust-note {
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .testimonial {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(24px, 3vw, 32px);
+      transition: border-color .25s;
+    }
+    .testimonial:hover { border-color: var(--border-h); }
+    .testimonial-text {
+      font-size: .95rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .testimonial-text::before {
+      content: '"';
+      font-family: var(--serif);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: rgba(245,158,11,.2);
+      position: absolute;
+      top: -8px; left: -4px;
+    }
+    .testimonial-text p { padding-left: 20px; }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .author-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .author-name {
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .author-meta {
+      font-size: .78rem;
+      color: var(--subtle);
+    }
+
+    /* ─── CTA ────────────────────────────────────── */
+    #cta {
+      padding: var(--gap) 0;
+    }
+    .cta-inner {
+      background:
+        radial-gradient(ellipse 80% 100% at 50% 100%, rgba(245,158,11,.12), transparent),
+        var(--bg-card);
+      border: 1px solid rgba(245,158,11,.18);
+      border-radius: clamp(20px, 3vw, 36px);
+      padding: clamp(48px, 8vw, 96px) clamp(24px, 6vw, 80px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245,158,11,.4), transparent);
+    }
+    .cta-headline {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .cta-headline em {
+      font-style: italic;
+      background: linear-gradient(135deg, #fde68a, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cta-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 460px;
+      margin: 0 auto 40px;
+    }
+    .cta-fine {
+      margin-top: 20px;
+      font-size: .78rem;
+      color: var(--subtle);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-size: .8rem;
+      color: var(--subtle);
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--muted); }
+    .footer-copy {
+      font-size: .8rem;
+      color: var(--subtle);
+    }
+
+    /* ─── Responsive ─────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .features-note { display: none; }
+      .features-header { margin-bottom: 32px; }
+      .hero-stats { gap: 28px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══ NAV ═══════════════════════════════════════ -->
+<nav id="nav">
+  <div class="container nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">🤝</div>
+      <span>
+        <span class="logo-text">PflegeAssistent</span>
+        <span class="logo-accent"> KI</span>
+      </span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#problem">Probleme</a></li>
+      <li><a href="#how">So geht's</a></li>
+      <li><a href="#features">Funktionen</a></li>
+      <li><a href="#trust">Erfahrungen</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="/chat" class="btn btn-primary">Jetzt starten</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══ HERO ═══════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+
+  <div class="container hero-content">
+    <div class="eyebrow reveal">KI für pflegende Angehörige</div>
+
+    <h1 class="hero-h1 reveal reveal-delay-1">
+      Der Pflegegrad,<br />
+      der dir <em>zusteht.</em>
+    </h1>
+
+    <p class="hero-sub reveal reveal-delay-2">
+      Du pflegst jeden Tag. Ich helfe dir, das System zu verstehen —
+      Formulare, Widersprüche, MDK-Gutachten — in deiner Sprache.
+    </p>
+
+    <div class="hero-actions reveal reveal-delay-3">
+      <a href="/chat" class="btn btn-primary btn-large">
+        Jetzt starten
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+      </a>
+      <a href="#how" class="btn btn-ghost btn-large">Wie es funktioniert</a>
+    </div>
+
+    <div class="hero-stats reveal reveal-delay-4">
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Pflegegrade erklärt</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Fragen — immer</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0€</div>
+        <div class="stat-label">Einstieg kostenlos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Immer erreichbar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ PROBLEM ════════════════════════════════════ -->
+<section id="problem" class="section">
+  <div class="container">
+    <p class="section-label reveal">Kennst du das?</p>
+
+    <div class="problem-grid">
+      <div class="pain-item reveal">
+        <div class="pain-num">01</div>
+        <div class="pain-body">
+          <h3 class="pain-title">Abgelehnt. Ohne wirkliche Erklärung.</h3>
+          <p class="pain-sub">Der Bescheid kam per Post. Pflegegrad 1 — obwohl du weißt, dass es mehr sein müsste. Was jetzt?</p>
+        </div>
+      </div>
+
+      <div class="pain-item reveal reveal-delay-1">
+        <div class="pain-num">02</div>
+        <div class="pain-body">
+          <h3 class="pain-title">Widerspruch? Wo fange ich an?</h3>
+          <p class="pain-sub">Eine Frist läuft. Du weißt nicht, was du schreiben sollst. Rechtsanwälte sind teuer und langsam.</p>
+        </div>
+      </div>
+
+      <div class="pain-item reveal reveal-delay-2">
+        <div class="pain-num">03</div>
+        <div class="pain-body">
+          <h3 class="pain-title">Das MDK-Gutachten ist falsch — aber ich weiß nicht warum.</h3>
+          <p class="pain-sub">Der Gutachter war 45 Minuten da. An einem guten Tag. Alles wurde kleingeredet.</p>
+        </div>
+      </div>
+
+      <div class="pain-item reveal reveal-delay-3">
+        <div class="pain-num">04</div>
+        <div class="pain-body">
+          <h3 class="pain-title">Zu erschöpft, um noch zu kämpfen.</h3>
+          <p class="pain-sub">Du pflegst rund um die Uhr — und sollst jetzt auch noch Bürokratie-Experte sein. Das ist nicht fair.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ HOW IT WORKS ════════════════════════════════ -->
+<section id="how" class="section">
+  <div class="container">
+    <p class="section-label reveal" style="text-align:center">So einfach geht's</p>
+    <h2 class="how-headline reveal reveal-delay-1">Drei Schritte.<br />Kein Juristendeutsch.</h2>
+    <p class="how-sub reveal reveal-delay-2">Beschreib mir deine Situation — ich kümmere mich um den Rest.</p>
+
+    <div class="steps">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-icon">🗣️</div>
+        <div class="step-num">1</div>
+        <h3>Situation schildern</h3>
+        <p>Erzähl mir, was passiert ist — in deinen eigenen Worten. Kein Formular, keine Checkliste. Einfach reden.</p>
+      </div>
+
+      <div class="step reveal reveal-delay-2">
+        <div class="step-icon">🧠</div>
+        <div class="step-num">2</div>
+        <h3>KI analysiert &amp; formuliert</h3>
+        <p>Ich erkläre, welche Rechte du hast — und schreibe mit dir Widersprüche, Anträge und Stellungnahmen, die wirken.</p>
+      </div>
+
+      <div class="step reveal reveal-delay-3">
+        <div class="step-icon">💪</div>
+        <div class="step-num">3</div>
+        <h3>Du handelst — mit Rückenwind</h3>
+        <p>Mit fertigen Texten, klaren nächsten Schritten und dem Wissen, was dir zusteht. Auf Augenhöhe mit dem System.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ FEATURES ════════════════════════════════════ -->
+<section id="features" class="section">
+  <div class="container">
+    <div class="features-header">
+      <div>
+        <p class="section-label reveal">Was ich für dich tue</p>
+        <h2 class="features-headline reveal reveal-delay-1">Alles, was du brauchst.<br />An einem Ort.</h2>
+      </div>
+      <p class="features-note reveal reveal-delay-2">Kein Login-Dschungel. Kein Abo-Versteck. Einfach starten und fragen.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-icon">📊</span>
+        <h3>Pflegegrad einschätzen</h3>
+        <p>Bevor du den Antrag stellst: Ich helfe dir, den wahrscheinlichen Pflegegrad realistisch einzuschätzen — und bereite dich auf das MDK-Gespräch vor.</p>
+        <span class="feature-tag">Erstantrag & Höherstufung</span>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-icon">✍️</span>
+        <h3>Widerspruch formulieren</h3>
+        <p>Zu niedrig eingestuft? Ich formuliere mit dir einen fundierten Widerspruch — mit den richtigen Paragraphen, in der richtigen Frist.</p>
+        <span class="feature-tag">SGB XI · Widerspruchsfrist</span>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-3">
+        <span class="feature-icon">🏥</span>
+        <h3>MDK-Vorbereitung</h3>
+        <p>Der Gutachter kommt. Ich zeige dir, worauf es ankommt — welche Schwächen dokumentiert werden müssen, und wie du ruhig bleibst.</p>
+        <span class="feature-tag">Gutachten · Tagesprotokoll</span>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-4">
+        <span class="feature-icon">⚖️</span>
+        <h3>Rechte kennen &amp; nutzen</h3>
+        <p>Verhinderungspflege, Kurzzeitpflege, Entlastungsleistungen — ich erkläre, was dir wirklich zusteht und wie du es bekommst.</p>
+        <span class="feature-tag">SGB XI · Leistungsansprüche</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ TRUST ════════════════════════════════════════ -->
+<section id="trust" class="section">
+  <div class="container">
+    <div class="trust-statement">
+      <p class="section-label reveal" style="text-align:center">Was wirklich zählt</p>
+      <p class="trust-quote reveal reveal-delay-1">
+        "Wir ersetzen keine Pflegefachkräfte. Wir geben dir die Information, die du brauchst, um auf Augenhöhe zu sein."
+      </p>
+      <p class="trust-note reveal reveal-delay-2">
+        Alle Informationen basieren auf öffentlichem Fachwissen aus deutschen Pflegekassen,
+        Sozialverbänden (VdK, Caritas, AWO) und Bundesministerien.
+        Bei wichtigen Entscheidungen empfehlen wir immer zusätzlich einen Pflegestützpunkt oder Sozialverband.
+      </p>
+    </div>
+
+    <div class="testimonials">
+      <div class="testimonial reveal reveal-delay-1">
+        <div class="testimonial-text">
+          <p>Meine Mutter bekam Pflegegrad 2 — obwohl sie kaum noch alleine essen kann. Der Widerspruchsbrief, den ich hier formuliert habe, war sachlich, präzise und hat gewirkt. Pflegegrad 3 drei Wochen später.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩</div>
+          <div>
+            <div class="author-name">Sandra K.</div>
+            <div class="author-meta">Tochter, pflegend seit 4 Jahren · Hamburg</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial reveal reveal-delay-2">
+        <div class="testimonial-text">
+          <p>Ich wusste nicht mal, dass ich Anspruch auf Verhinderungspflege habe. Hier wurde mir innerhalb von Minuten klar, was mir zusteht — und wie ich es beantrage. Das hat mir wirklich Luft gegeben.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👨</div>
+          <div>
+            <div class="author-name">Michael R.</div>
+            <div class="author-meta">Sohn, pflegt Vater mit Demenz · München</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial reveal reveal-delay-3">
+        <div class="testimonial-text">
+          <p>Das MDK-Gespräch war immer das Schlimmste. Ich hab vorher kaum geschlafen. Diesmal kannte ich die Kriterien, hatte alles dokumentiert — und der Gutachter konnte nichts kleinreden.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩‍🦳</div>
+          <div>
+            <div class="author-name">Ingrid M.</div>
+            <div class="author-meta">Ehefrau, pflegt seit 6 Jahren · Köln</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ CTA ══════════════════════════════════════════ -->
+<section id="cta" class="section">
+  <div class="container">
+    <div class="cta-inner">
+      <p class="section-label reveal" style="text-align:center;margin-bottom:24px">Bereit?</p>
+      <h2 class="cta-headline reveal reveal-delay-1">
+        Dein Pflegegrad ist<br />
+        kein <em>Zufall.</em>
+      </h2>
+      <p class="cta-sub reveal reveal-delay-2">
+        Du hast Rechte. Ich helfe dir, sie zu kennen und einzufordern — kostenlos, sofort, ohne Anmeldung.
+      </p>
+      <div class="reveal reveal-delay-3">
+        <a href="/chat" class="btn btn-primary btn-large">
+          Kostenlos starten
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+        </a>
+        <p class="cta-fine">Kein Konto nötig · Keine Kreditkarte · Sofort loslegen</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ FOOTER ════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon" style="width:28px;height:28px;font-size:.8rem">🤝</div>
+        <span style="font-size:.85rem">
+          <span class="logo-text">PflegeAssistent</span>
+          <span class="logo-accent"> KI</span>
+        </span>
+      </a>
+      <ul class="footer-links">
+        <li><a href="#">Impressum</a></li>
+        <li><a href="#">Datenschutz</a></li>
+        <li><a href="#">Haftungsausschluss</a></li>
+        <li><a href="#">Kontakt</a></li>
+      </ul>
+      <p class="footer-copy">© 2025 PflegeAssistent KI</p>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══ JS ════════════════════════════════════════════ -->
+<script>
+  /* ── Nav scroll effect ─────────────────────── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  /* ── Intersection Observer reveal ────────────── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  /* Trigger hero elements immediately */
+  document.querySelectorAll('#hero .reveal').forEach(el => {
+    el.classList.add('visible');
+  });
+
+  /* All other reveals via observer */
+  document.querySelectorAll('.reveal:not(#hero .reveal)').forEach(el => {
+    io.observe(el);
+  });
+
+  /* ── Smooth anchor scroll ─────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
