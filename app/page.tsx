@@ -19,13 +19,13 @@ const CARD_STYLES: Record<ModeId, { prominent?: boolean }> = {
 };
 
 export default function Home() {
-  const [view, setView]               = useState<'welcome' | 'chat'>('welcome');
-  const [activeMode, setActiveMode]   = useState<ModeId>('allgemein');
+  const [view, setView]                     = useState<'welcome' | 'chat'>('welcome');
+  const [activeMode, setActiveMode]         = useState<ModeId>('allgemein');
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [accepted, setAccepted]       = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [userSettings, setUserSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
-  const [chatKey, setChatKey]         = useState(0);
+  const [accepted, setAccepted]             = useState(false);
+  const [showSettings, setShowSettings]     = useState(false);
+  const [userSettings, setUserSettings]     = useState<UserSettings>(DEFAULT_SETTINGS);
+  const [chatKey, setChatKey]               = useState(0);
 
   useEffect(() => {
     if (localStorage.getItem('disclaimer-accepted') === 'true') setAccepted(true);
@@ -41,7 +41,7 @@ export default function Home() {
       (entries) => entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
       }),
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
     els.forEach(el => observer.observe(el));
     return () => observer.disconnect();
@@ -72,16 +72,18 @@ export default function Home() {
 
   const hasSettings = !!(userSettings.personalContext.trim() || userSettings.customInstructions.trim());
 
-  /* ──────────────────────────────────────────
+  /* ──────────────────────────────────────────────
      CHAT VIEW
-  ────────────────────────────────────────── */
+  ────────────────────────────────────────────── */
   if (view === 'chat') {
     const mode = MODES.find(m => m.id === activeMode)!;
     return (
       <div className="flex flex-col h-screen overflow-hidden relative">
         <div className="orb orb-1" /><div className="orb orb-2" /><div className="orb orb-3" />
 
-        {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />}
+        {showSettings && (
+          <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />
+        )}
 
         <header className="glass-dark flex-shrink-0 relative z-10">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -108,7 +110,9 @@ export default function Home() {
                 ))}
               </div>
               <button onClick={() => setShowSettings(true)}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${hasSettings ? 'text-amber-400 hover:bg-amber-500/10' : 'text-white/30 hover:text-white/10'}`}>
+                className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${
+                  hasSettings ? 'text-amber-400 hover:bg-amber-500/10' : 'text-white/30 hover:text-white/10'
+                }`}>
                 <Settings size={14} />
               </button>
               <button onClick={() => setShowDisclaimer(true)}
@@ -134,15 +138,17 @@ export default function Home() {
     );
   }
 
-  /* ──────────────────────────────────────────
+  /* ──────────────────────────────────────────────
      WELCOME VIEW
-  ────────────────────────────────────────── */
+  ────────────────────────────────────────────── */
   return (
     <div style={{ background: '#0a0a0f', minHeight: '100vh' }}>
       {showDisclaimer && <DisclaimerModal onAccept={handleAccept} />}
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />}
+      {showSettings && (
+        <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />
+      )}
 
-      {/* ── Sticky Nav ──────────────────────── */}
+      {/* ── Sticky Nav ──────────────────────────── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
         background: 'rgba(10,10,15,0.88)',
@@ -171,10 +177,7 @@ export default function Home() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <button
               onClick={() => setShowSettings(true)}
-              style={{
-                color: '#a09a90', fontSize: 13, background: 'none',
-                border: 'none', cursor: 'pointer', padding: '6px 0',
-              }}
+              style={{ color: '#a09a90', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Einstellungen
             </button>
@@ -194,59 +197,60 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ── Hero ────────────────────────────── */}
+      {/* ── SEKTION 1: HERO ─────────────────────── */}
       <section style={{ position: 'relative', overflow: 'hidden', background: '#0a0a0f' }}>
         <PaperCanvas />
 
+        {/* Amber radial overlay */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 1,
-          background: 'radial-gradient(ellipse 70% 60% at 50% 90%, rgba(212,134,10,0.14) 0%, transparent 65%), rgba(10,10,15,0.62)',
+          background: [
+            'radial-gradient(ellipse 80% 50% at 20% 100%, rgba(212,134,10,0.10) 0%, transparent 60%)',
+            'radial-gradient(ellipse 60% 40% at 80% 100%, rgba(212,134,10,0.07) 0%, transparent 55%)',
+            'rgba(10,10,15,0.60)',
+          ].join(', '),
         }} />
 
         <div style={{
           position: 'relative', zIndex: 2,
           maxWidth: 720, margin: '0 auto', textAlign: 'center',
-          padding: 'clamp(100px, 15vw, 160px) 24px',
+          padding: 'clamp(110px, 16vw, 170px) 24px clamp(100px, 14vw, 150px)',
         }}>
-          <p className="fade-up fade-up-1" style={{
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-            letterSpacing: '3px', color: '#d4860a', marginBottom: 28,
-          }}>
-            KI-Assistent für pflegende Angehörige
-          </p>
-
-          <h1 className="font-fraunces fade-up fade-up-2" style={{
-            fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 300,
-            lineHeight: 1.15, color: '#f0ede8',
-            letterSpacing: '-0.02em', marginBottom: 28,
+          <h1 className="font-fraunces fade-up fade-up-1" style={{
+            fontSize: 'clamp(42px, 6.5vw, 68px)',
+            fontWeight: 300, lineHeight: 1.12,
+            color: '#f0ede8', letterSpacing: '-0.025em',
+            marginBottom: 32,
           }}>
             Pflege verstehen.<br />
             <span style={{ color: '#d4860a' }}>Ansprüche durchsetzen.</span>
           </h1>
 
-          <p className="fade-up fade-up-3" style={{
-            fontSize: 18, color: '#a09a90', lineHeight: 1.7,
-            maxWidth: 480, margin: '0 auto 48px',
+          <p className="fade-up fade-up-2" style={{
+            fontSize: 'clamp(16px, 2vw, 19px)',
+            color: '#a09a90', lineHeight: 1.75,
+            maxWidth: 520, margin: '0 auto 52px',
           }}>
-            Bürokratie, Formulare, Widersprüche — du musst das nicht alleine verstehen.
-            Dein persönlicher Assistent für das deutsche Pflegesystem.
+            Pflegegrad zu niedrig. Formular unverständlich. Widerspruch nötig.
+            <br />
+            Dein KI-Assistent kennt das System — und erklärt es dir.
           </p>
 
-          <div className="fade-up fade-up-4" style={{
+          <div className="fade-up fade-up-3" style={{
             display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap',
           }}>
             <button
               onClick={() => openChat('allgemein')}
               style={{
                 background: '#d4860a', color: '#fff', border: 'none',
-                borderRadius: 9999, padding: '16px 36px',
+                borderRadius: 9999, padding: '16px 38px',
                 fontSize: 15, fontWeight: 600, cursor: 'pointer',
                 boxShadow: '0 8px 32px rgba(212,134,10,0.35)',
                 transition: 'transform .15s, box-shadow .15s',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 12px 40px rgba(212,134,10,0.45)';
+                e.currentTarget.style.boxShadow = '0 12px 40px rgba(212,134,10,0.50)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = '';
@@ -259,13 +263,13 @@ export default function Home() {
               onClick={() => openChat('widerspruch')}
               style={{
                 background: 'transparent', color: '#f0ede8',
-                border: '1px solid rgba(240,237,232,0.25)',
-                borderRadius: 9999, padding: '16px 36px',
-                fontSize: 15, fontWeight: 500, cursor: 'pointer',
-                transition: 'border-color .15s',
+                border: '1px solid rgba(240,237,232,0.22)',
+                borderRadius: 9999, padding: '16px 38px',
+                fontSize: 15, fontWeight: 400, cursor: 'pointer',
+                transition: 'border-color .15s, color .15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(240,237,232,0.5)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(240,237,232,0.25)')}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(240,237,232,0.50)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(240,237,232,0.22)'; }}
             >
               Pflegegrad prüfen lassen
             </button>
@@ -273,104 +277,110 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Problem ─────────────────────────── */}
-      <section style={{ background: '#111118', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+      {/* ── SEKTION 2: PROBLEM ──────────────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <p className="reveal-scroll" style={{
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-            letterSpacing: '3px', color: '#d4860a',
-            textAlign: 'center', marginBottom: 20,
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#a09a90',
+            textAlign: 'center', marginBottom: 72,
           }}>
             Kennst du das?
           </p>
-          <h2 className="font-fraunces reveal-scroll" style={{
-            fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 300,
-            color: '#f0ede8', textAlign: 'center',
-            marginBottom: 64, lineHeight: 1.25,
-          }}>
-            Das Pflegesystem ist komplex.<br />
-            Die Bürokratie ist erschöpfend.
-          </h2>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: 24,
-          }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
             {[
-              { num: '01', text: 'Du erhältst einen Pflegegradsbescheid und weißt nicht, ob er korrekt ist.' },
-              { num: '02', text: 'Formulare stapeln sich — Fristen verstreichen, ohne dass du weißt, was gilt.' },
-              { num: '03', text: 'Du fragst beim MDK nach und verstehst die Antwort nicht.' },
-              { num: '04', text: 'Widerspruch einlegen klingt nach Arbeit, die du gerade nicht leisten kannst.' },
-            ].map(({ num, text }, i) => (
-              <div key={num} className="reveal-scroll" style={{
-                transitionDelay: `${i * 0.12}s`,
-                padding: '32px 28px',
-                background: '#16162a',
-                borderRadius: 16,
-                border: '1px solid rgba(255,255,255,0.05)',
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#d4860a', letterSpacing: '2px', marginBottom: 16 }}>
-                  {num}
-                </div>
-                <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.7 }}>{text}</p>
+              ['Pflegegrad beantragt.', 'Zu niedrig eingestuft.'],
+              ['Hilfsmittel abgelehnt.', 'Ohne Erklärung.'],
+              ['Formular vor dir.', 'Kein Plan wo anfangen.'],
+              ['Widerspruch möglich.', 'Frist läuft.'],
+            ].map(([line1, line2], i) => (
+              <div key={i} className="reveal-scroll" style={{ transitionDelay: `${i * 0.15}s` }}>
+                <p style={{
+                  fontSize: 'clamp(22px, 4vw, 30px)',
+                  color: '#f0ede8', lineHeight: 1.4,
+                  fontWeight: 300, letterSpacing: '-0.01em',
+                }}>
+                  {line1}<br />
+                  <span style={{ color: '#a09a90' }}>{line2}</span>
+                </p>
               </div>
             ))}
           </div>
+
+          <p className="reveal-scroll" style={{
+            marginTop: 72,
+            fontSize: 15, fontStyle: 'italic',
+            color: '#d4860a', lineHeight: 1.65,
+            textAlign: 'center',
+            transitionDelay: '0.6s',
+          }}>
+            Das ist nicht dein Versagen. Das ist das System.
+          </p>
         </div>
       </section>
 
-      {/* ── Trust ───────────────────────────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      {/* ── SEKTION 3: VERTRAUEN ────────────────── */}
+      <section style={{ background: '#111118', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <p className="reveal-scroll" style={{
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-            letterSpacing: '3px', color: '#d4860a',
-            textAlign: 'center', marginBottom: 60,
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#a09a90',
+            textAlign: 'center', marginBottom: 64,
           }}>
             Warum dieser Assistent existiert
           </p>
 
-          <div className="reveal-scroll" style={{ borderLeft: '3px solid #d4860a', paddingLeft: 36 }}>
+          <div className="reveal-scroll" style={{
+            borderLeft: '4px solid #d4860a',
+            paddingLeft: 40,
+          }}>
             <p className="font-fraunces" style={{
-              fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 300,
-              color: '#f0ede8', lineHeight: 1.65, marginBottom: 24,
+              fontSize: 'clamp(17px, 2.5vw, 21px)',
+              fontWeight: 300, fontStyle: 'italic',
+              color: '#f0ede8', lineHeight: 1.8,
+              marginBottom: 0,
             }}>
-              Als mein Vater pflegebedürftig wurde, stand ich vor einem Berg aus Formularen,
-              Bescheiden und Fristen. Niemand erklärte mir, was ich wirklich tun konnte.
+              Dieser Assistent existiert, weil ich keine andere Wahl hatte,
+              als das System zu verstehen.
+              <br /><br />
+              Ich bin Vater einer schwerstbehinderten Tochter. Kein Experte
+              von oben herab — sondern jemand, der dieselben Formulare
+              vor sich hatte, dieselben Ablehnungsbescheide gelesen hat,
+              und dieselbe Frage kannte: Wo fange ich überhaupt an?
+              <br /><br />
+              Jahre mit Pflegekassen, MDK, Hilfsmitteln, Widersprüchen,
+              Behörden. Nicht als Berater. Als Vater.
+              <br /><br />
+              Aus diesem Wissen ist dieser Assistent entstanden. Nicht um
+              klug zu klingen. Sondern damit du nicht alleine durch das musst.
             </p>
-            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.75, marginBottom: 20 }}>
-              Der Pflegegrad war zu niedrig eingestuft. Der Widerspruch erfolgreich — aber nur,
-              weil wir zufällig die richtigen Fragen gestellt haben. Nicht jeder hat dieses Glück.
-            </p>
-            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.75 }}>
-              Dieser Assistent gibt jedem pflegenden Angehörigen das Wissen, das früher nur
-              Sozialrechtlern vorbehalten war. Verständlich. Zugänglich. Kostenlos.
-            </p>
-            <p style={{ marginTop: 28, fontSize: 13, color: '#6b6575' }}>
-              — Der Gründer, pflegender Angehöriger
+            <p style={{ marginTop: 36, fontSize: 13, color: '#6b6575', fontStyle: 'normal' }}>
+              — Der Gründer
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── Numbers ─────────────────────────── */}
-      <section style={{ background: '#111118', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+      {/* ── SEKTION 4: ZAHLEN ───────────────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 40, textAlign: 'center',
+            gap: 'clamp(40px, 6vw, 80px)',
+            textAlign: 'center',
           }}>
             {[
               { stat: '1 von 3', label: 'Pflegeeinstufungen sind zu niedrig' },
-              { stat: '6 Wochen', label: 'Widerspruchsfrist nach Erhalt des Bescheids' },
-              { stat: '0 €', label: 'kostet der erste Schritt mit diesem Assistenten' },
+              { stat: '6 Wochen', label: 'Widerspruchsfrist — oft unbekannt' },
+              { stat: '0 €', label: 'Kostet deine erste Frage' },
             ].map(({ stat, label }) => (
               <div key={stat} className="reveal-scroll">
                 <div className="font-fraunces" style={{
-                  fontSize: 'clamp(36px, 5vw, 48px)', fontWeight: 700,
-                  color: '#d4860a', lineHeight: 1, marginBottom: 14,
+                  fontSize: 'clamp(38px, 5.5vw, 52px)',
+                  fontWeight: 700, color: '#d4860a',
+                  lineHeight: 1, marginBottom: 16,
                 }}>
                   {stat}
                 </div>
@@ -381,64 +391,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Features ────────────────────────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+      {/* ── SEKTION 5: FEATURES ─────────────────── */}
+      <section style={{ background: '#111118', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p className="reveal-scroll" style={{
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-            letterSpacing: '3px', color: '#d4860a',
-            textAlign: 'center', marginBottom: 20,
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#a09a90',
+            textAlign: 'center', marginBottom: 64,
           }}>
-            Was du hier tun kannst
+            Womit kann ich dir helfen?
           </p>
-          <h2 className="font-fraunces reveal-scroll" style={{
-            fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 300,
-            color: '#f0ede8', textAlign: 'center',
-            marginBottom: 56, lineHeight: 1.25,
-          }}>
-            Konkrete Hilfe, nicht abstrakte Ratschläge.
-          </h2>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
             gap: 20,
           }}>
             {[
               {
                 id: 'widerspruch' as ModeId,
                 title: 'Widerspruch schreiben',
-                desc: 'Erhalte einen vollständigen Widerspruchstext — angepasst an deinen Bescheid, mit den richtigen gesetzlichen Grundlagen.',
-                cta: 'Widerspruch starten →',
+                text: 'Bescheid erhalten? Wir formulieren.',
+                cta: 'Widerspruch vorbereiten →',
               },
               {
                 id: 'allgemein' as ModeId,
-                title: 'Pflegegrad verstehen',
-                desc: 'Was bedeutet dein Gutachten? Welche Kriterien wurden wie bewertet? Wir erklären es dir auf Augenhöhe.',
+                title: 'Pflegegrad & Leistungen',
+                text: 'Was steht dir zu? Wir prüfen es.',
                 cta: 'Pflegegrad prüfen →',
               },
               {
                 id: 'formular' as ModeId,
-                title: 'Formular ausfüllen',
-                desc: 'Kein Formular mehr, das du alleine durchkämpfst. Erhalte Schritt-für-Schritt-Hilfe für jeden Antrag.',
-                cta: 'Formular öffnen →',
-              },
-              {
-                id: 'pflegealltag' as ModeId,
-                title: 'Pflegealltag meistern',
-                desc: 'Von Hilfsmitteln bis zu Entlastungsleistungen — erfahre, was dir zusteht und wie du es bekommst.',
-                cta: 'Alltag entlasten →',
+                title: 'Formulare verstehen',
+                text: 'Kein Juradeutsch mehr.',
+                cta: 'Formular hochladen →',
               },
               {
                 id: 'rechtlich' as ModeId,
                 title: 'Rechtliche Fragen',
-                desc: 'Vollmachten, Betreuungsrecht, § 15 SGB XI — klare Antworten auf Fragen, die du vielleicht noch nicht gestellt hast.',
-                cta: 'Rechtsfrage klären →',
+                text: 'Deine Rechte, klar erklärt.',
+                cta: 'Frage stellen →',
               },
-            ].map(({ id, title, desc, cta }, i) => (
+              {
+                id: 'pflegealltag' as ModeId,
+                title: 'Pflegealltag',
+                text: 'Praktische Hilfe für jeden Tag.',
+                cta: 'Jetzt fragen →',
+              },
+            ].map(({ id, title, text, cta }, i) => (
               <div key={id} className="reveal-scroll" style={{
-                transitionDelay: `${i * 0.1}s`,
-                padding: '32px 28px',
+                transitionDelay: `${i * 0.10}s`,
+                padding: '36px 32px',
                 background: '#16162a',
                 borderRadius: 16,
                 border: '1px solid rgba(255,255,255,0.05)',
@@ -446,20 +449,25 @@ export default function Home() {
               }}>
                 <h3 className="font-fraunces" style={{
                   fontSize: 20, fontWeight: 600,
-                  color: '#f0ede8', marginBottom: 12, lineHeight: 1.3,
+                  color: '#f0ede8', lineHeight: 1.3, marginBottom: 10,
                 }}>
                   {title}
                 </h3>
-                <p style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, flexGrow: 1 }}>{desc}</p>
+                <p style={{
+                  fontSize: 14, color: '#a09a90',
+                  lineHeight: 1.7, flexGrow: 1,
+                }}>
+                  {text}
+                </p>
                 <button
                   onClick={() => openChat(id)}
                   style={{
-                    marginTop: 24, background: 'none', border: 'none',
+                    marginTop: 28, background: 'none', border: 'none',
                     color: '#d4860a', fontSize: 13, fontWeight: 600,
                     cursor: 'pointer', textAlign: 'left', padding: 0,
                     transition: 'opacity .15s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.65')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
                   {cta}
@@ -470,90 +478,95 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Testimonials ────────────────────── */}
-      <section style={{ background: '#111118', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+      {/* ── SEKTION 6: TESTIMONIALS ─────────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p className="reveal-scroll" style={{
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-            letterSpacing: '3px', color: '#d4860a',
-            textAlign: 'center', marginBottom: 56,
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#a09a90',
+            textAlign: 'center', marginBottom: 64,
           }}>
             Was andere sagen
           </p>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
             gap: 24,
           }}>
             {[
               {
-                quote: 'Ich wusste nicht mal, dass ich Widerspruch einlegen kann. Jetzt haben wir Pflegegrad 3 — rückwirkend.',
-                role: 'Pflegende Tochter, Berlin',
+                quote: 'Ich wusste nicht, dass ich Widerspruch einlegen kann. Jetzt haben wir Pflegegrad 3 bekommen.',
+                role: 'Pflegende Mutter eines Kindes mit Behinderung',
               },
               {
-                quote: 'Endlich jemand, der mir erklärt, was in diesen Formularen steht. Ohne Fachchinesisch.',
-                role: 'Ehemann einer Pflegebedürftigen, München',
+                quote: 'Endlich versteht jemand, was in diesen Formularen steht.',
+                role: 'Pflegender Ehemann, Demenzerkrankung der Partnerin',
               },
               {
-                quote: 'Der Assistent hat mir in 10 Minuten mehr geholfen als die Pflegekasse in drei Monaten.',
-                role: 'Pflegender Sohn, Hamburg',
+                quote: 'Der MDK-Termin war das erste Mal, dass ich vorbereitet war.',
+                role: 'Angehörige einer Pflegebedürftigen, Pflegegrad 2',
               },
             ].map(({ quote, role }, i) => (
               <div key={role} className="reveal-scroll" style={{
                 transitionDelay: `${i * 0.12}s`,
-                padding: '32px 28px',
+                padding: '36px 32px',
                 background: '#16162a',
                 borderRadius: 16,
                 border: '1px solid rgba(255,255,255,0.05)',
               }}>
                 <p className="font-fraunces" style={{
-                  fontSize: 17, fontStyle: 'italic', fontWeight: 300,
-                  color: '#f0ede8', lineHeight: 1.65, marginBottom: 20,
+                  fontSize: 16, fontStyle: 'italic',
+                  fontWeight: 300, color: '#f0ede8',
+                  lineHeight: 1.75, marginBottom: 24,
                 }}>
                   &ldquo;{quote}&rdquo;
                 </p>
-                <p style={{ fontSize: 12, color: '#6b6575', fontWeight: 500 }}>— {role}</p>
+                <p style={{ fontSize: 13, color: '#a09a90', fontWeight: 400 }}>
+                  — {role}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ─────────────────────────────── */}
-      <section style={{ background: '#d4860a', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+      {/* ── SEKTION 7: ABSCHLUSS CTA ────────────── */}
+      <section style={{ background: '#d4860a', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center' }}>
           <h2 className="font-fraunces reveal-scroll" style={{
-            fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 300,
-            color: '#1a0e00', lineHeight: 1.2, marginBottom: 20,
+            fontSize: 'clamp(32px, 5.5vw, 56px)',
+            fontWeight: 300, color: '#0a0a0f',
+            lineHeight: 1.15, marginBottom: 24,
+            letterSpacing: '-0.02em',
           }}>
-            Deine erste Frage wartet.
+            Du musst das nicht alleine<br />durchkämpfen.
           </h2>
           <p className="reveal-scroll" style={{
-            fontSize: 17, color: 'rgba(26,14,0,0.65)',
-            lineHeight: 1.65, marginBottom: 44,
+            fontSize: 17, color: '#1a1a0a',
+            lineHeight: 1.7, marginBottom: 52,
           }}>
-            Kostenlos, anonym, ohne Registrierung.<br />
-            Einfach fragen.
+            Stell deine erste Frage.<br />
+            Kostenlos. Jetzt.
           </p>
           <button
             className="reveal-scroll"
             onClick={() => openChat('allgemein')}
             style={{
-              background: '#1a0e00', color: '#f5c97a',
+              background: '#0a0a0f', color: '#f0ede8',
               border: 'none', borderRadius: 9999,
-              padding: '18px 44px', fontSize: 16, fontWeight: 600,
+              padding: '18px 48px', fontSize: 16, fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.30)',
               transition: 'transform .15s, box-shadow .15s',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.35)';
+              e.currentTarget.style.boxShadow = '0 14px 48px rgba(0,0,0,0.40)';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = '';
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.25)';
+              e.currentTarget.style.boxShadow = '0 8px 40px rgba(0,0,0,0.30)';
             }}
           >
             Jetzt starten →
@@ -561,28 +574,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Footer ──────────────────────────── */}
-      <footer style={{
-        background: '#080808',
-        padding: '40px 24px',
-        textAlign: 'center',
-      }}>
-        <p style={{
-          fontSize: 12, color: '#555',
-          lineHeight: 1.8, maxWidth: 600, margin: '0 auto',
-        }}>
-          Alle Informationen basieren auf öffentlichem Fachwissen aus deutschen Pflegekassen,
-          Sozialverbänden und Behörden. Kein Ersatz für individuelle Rechts- oder Pflegeberatung.{' '}
-          <button
-            onClick={() => setShowDisclaimer(true)}
-            style={{
-              color: '#555', background: 'none', border: 'none',
-              cursor: 'pointer', textDecoration: 'underline', fontSize: 12,
-            }}
-          >
-            Hinweise lesen
-          </button>
-        </p>
+      {/* ── FOOTER ──────────────────────────────── */}
+      <footer style={{ background: '#080808', padding: '48px 24px' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, color: '#555', lineHeight: 1.9 }}>
+            Alle Informationen basieren auf öffentlichem Fachwissen. Kein Ersatz
+            für individuelle Beratung.{' '}
+            <button
+              onClick={() => setShowDisclaimer(true)}
+              style={{
+                color: '#555', background: 'none', border: 'none',
+                cursor: 'pointer', textDecoration: 'underline', fontSize: 12,
+              }}
+            >
+              Hinweise
+            </button>
+          </p>
+          <p style={{ marginTop: 16, fontSize: 12, color: '#444' }}>
+            <button
+              onClick={() => {}}
+              style={{ color: '#444', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}
+            >
+              Impressum
+            </button>
+            <span style={{ margin: '0 10px', color: '#333' }}>·</span>
+            <button
+              onClick={() => {}}
+              style={{ color: '#444', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}
+            >
+              Datenschutz
+            </button>
+          </p>
+        </div>
       </footer>
     </div>
   );
