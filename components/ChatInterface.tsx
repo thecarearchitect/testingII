@@ -22,7 +22,6 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -33,10 +32,6 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
     setInput('');
     setError(null);
   }, [modeId]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
 
   const adjustTextarea = () => {
     const ta = textareaRef.current;
@@ -155,7 +150,6 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
             <span>{error}</span>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {messages.length > 0 && (
