@@ -1,6 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { MODES, ModeId } from '@/lib/modes';
+import { checkRateLimit } from '@/lib/rateLimiter';
 import { NextRequest } from 'next/server';
+
+function getClientIp(req: NextRequest): string {
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff) return xff.split(',')[0].trim();
+  return req.headers.get('x-real-ip') ?? 'unknown';
+}
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -61,6 +68,15 @@ export async function POST(req: NextRequest) {
     return new Response(
       JSON.stringify({ error: 'API-Schlüssel fehlt. Bitte ANTHROPIC_API_KEY in den Vercel-Umgebungsvariablen hinterlegen.' }),
       { status: 401, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  const ip = getClientIp(req);
+  const { allowed } = checkRateLimit(ip);
+  if (!allowed) {
+    return new Response(
+      JSON.stringify({ error: 'Du hast das aktuelle Anfrage-Limit erreicht. Bitte versuche es später erneut.' }),
+      { status: 429, headers: { 'Content-Type': 'application/json' } }
     );
   }
 

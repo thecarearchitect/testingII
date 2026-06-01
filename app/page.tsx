@@ -593,19 +593,17 @@ export default function Home() {
             </button>
           </p>
           <p style={{ marginTop: 16, fontSize: 12, color: '#444' }}>
-            <button
-              onClick={() => {}}
-              style={{ color: '#444', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}
-            >
+            <a href="/impressum" style={{ color: '#444', fontSize: 12, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#888')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#444')}>
               Impressum
-            </button>
+            </a>
             <span style={{ margin: '0 10px', color: '#333' }}>·</span>
-            <button
-              onClick={() => {}}
-              style={{ color: '#444', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}
-            >
+            <a href="/datenschutz" style={{ color: '#444', fontSize: 12, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#888')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#444')}>
               Datenschutz
-            </button>
+            </a>
           </p>
         </div>
       </footer>
