@@ -10,12 +10,12 @@ import { ModeId, MODES } from '@/lib/modes';
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
 /* ── gradient configs per mode ─────────── */
-const CARD_STYLES: Record<ModeId, { abbr: string }> = {
-  allgemein:    { abbr: 'AH' },
-  formular:     { abbr: 'FM' },
-  widerspruch:  { abbr: 'WS' },
-  pflegealltag: { abbr: 'PA' },
-  rechtlich:    { abbr: 'RQ' },
+const CARD_STYLES: Record<ModeId, { prominent?: boolean }> = {
+  allgemein:    { prominent: true  },
+  formular:     {},
+  widerspruch:  { prominent: true  },
+  pflegealltag: {},
+  rechtlich:    {},
 };
 
 export default function Home() {
@@ -232,8 +232,40 @@ export default function Home() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+          {/* Persönlicher Kontext — erste Karte */}
+          <button
+            onClick={() => setShowSettings(true)}
+            onMouseEnter={() => setHoveredMode('allgemein' as ModeId)}
+            onMouseLeave={() => setHoveredMode(null)}
+            className="mode-card text-left p-6 rounded-2xl fade-up"
+            style={{
+              animationDelay: '0.08s',
+              background: 'transparent',
+              border: '1px dashed rgba(212,134,10,0.30)',
+              boxShadow: 'none',
+              transition: 'border-color .2s',
+            }}
+          >
+            <h3
+              className="font-fraunces font-semibold mb-2"
+              style={{ fontSize: '17px', color: '#d4860a', lineHeight: 1.3 }}
+            >
+              Persönlicher Kontext
+            </h3>
+            <p style={{ fontSize: '13px', color: '#6b6575', lineHeight: 1.6 }}>
+              {hasSettings
+                ? 'Dein Profil ist aktiv – die KI kennt deine Situation.'
+                : 'Einmalig deine Situation schildern – alle Antworten werden persönlicher.'}
+            </p>
+            <div className="mt-5 text-xs font-medium" style={{ color: '#d4860a', opacity: 0.6 }}>
+              {hasSettings ? 'Profil bearbeiten →' : 'Profil anlegen →'}
+            </div>
+          </button>
+
+          {/* Mode cards */}
           {MODES.map((mode, i) => {
-            const { abbr } = CARD_STYLES[mode.id];
+            const { prominent } = CARD_STYLES[mode.id];
             const isHovered = hoveredMode === mode.id;
             return (
               <button
@@ -243,22 +275,20 @@ export default function Home() {
                 onMouseLeave={() => setHoveredMode(null)}
                 className="mode-card text-left p-6 rounded-2xl fade-up"
                 style={{
-                  animationDelay: `${0.08 * (i + 1)}s`,
+                  animationDelay: `${0.08 * (i + 2)}s`,
                   background: isHovered ? '#1e1e30' : '#16162a',
                   border: `1px solid ${isHovered ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
                   boxShadow: isHovered ? '0 16px 48px rgba(0,0,0,0.5)' : '0 2px 16px rgba(0,0,0,0.4)',
                   transition: 'background .2s, border-color .2s, box-shadow .2s, transform .2s',
                 }}
               >
-                <div
-                  className="font-fraunces mb-4 font-semibold"
-                  style={{ fontSize: '11px', letterSpacing: '2px', color: '#d4860a' }}
-                >
-                  {abbr}
-                </div>
                 <h3
                   className="font-fraunces font-semibold mb-2"
-                  style={{ fontSize: '17px', color: '#f0ede8', lineHeight: 1.3 }}
+                  style={{
+                    fontSize: prominent ? '19px' : '17px',
+                    color: prominent ? '#d4860a' : '#f0ede8',
+                    lineHeight: 1.3,
+                  }}
                 >
                   {mode.title}
                 </h3>
@@ -274,60 +304,26 @@ export default function Home() {
               </button>
             );
           })}
-
-          {/* Personal context card */}
-          <button
-            onClick={() => setShowSettings(true)}
-            onMouseEnter={() => setHoveredMode('allgemein' as ModeId)}
-            onMouseLeave={() => setHoveredMode(null)}
-            className="mode-card text-left p-6 rounded-2xl fade-up"
-            style={{
-              animationDelay: '0.56s',
-              background: 'transparent',
-              border: '1px dashed rgba(212,134,10,0.25)',
-              boxShadow: 'none',
-              transition: 'border-color .2s',
-            }}
-            onFocus={(e) => e.currentTarget.style.borderColor = 'rgba(212,134,10,0.5)'}
-            onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(212,134,10,0.25)'}
-          >
-            <div
-              className="font-fraunces mb-4 font-semibold"
-              style={{ fontSize: '11px', letterSpacing: '2px', color: '#d4860a' }}
-            >
-              PK
-            </div>
-            <h3
-              className="font-fraunces font-semibold mb-2"
-              style={{ fontSize: '17px', color: '#d4860a', lineHeight: 1.3, opacity: 0.8 }}
-            >
-              Persönlicher Kontext
-            </h3>
-            <p style={{ fontSize: '13px', color: '#6b6575', lineHeight: 1.6 }}>
-              {hasSettings
-                ? 'Dein Profil ist aktiv – die KI kennt deine Situation.'
-                : 'Einmalig deine Situation schildern – alle Antworten werden persönlicher.'}
-            </p>
-            <div className="mt-5 text-xs font-medium" style={{ color: '#d4860a', opacity: 0.5 }}>
-              {hasSettings ? 'Profil bearbeiten →' : 'Profil anlegen →'}
-            </div>
-          </button>
         </div>
+      </section>
 
-        {/* Bottom disclaimer */}
-        <p className="text-center mt-12 max-w-lg mx-auto leading-relaxed"
-           style={{ fontSize: '12px', color: '#3d3848' }}>
+      {/* Footer disclaimer */}
+      <footer
+        className="relative z-10 text-center px-6 pb-10"
+        style={{ background: '#0a0a0f' }}
+      >
+        <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.7 }}>
           Alle Informationen basieren auf öffentlichem Fachwissen aus deutschen Pflegekassen,
           Sozialverbänden und Behörden. Kein Ersatz für individuelle Beratung.{' '}
           <button
             onClick={() => setShowDisclaimer(true)}
-            className="underline transition-colors"
-            style={{ color: '#3d3848' }}
+            className="underline"
+            style={{ color: '#666' }}
           >
             Hinweise lesen
           </button>
         </p>
-      </section>
+      </footer>
     </div>
   );
 }
