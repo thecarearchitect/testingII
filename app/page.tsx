@@ -279,6 +279,22 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── SEKTION 1b: FÜR WEN ─────────────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div className="reveal-scroll" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 18, color: '#f0ede8', lineHeight: 2, marginBottom: 28 }}>
+            Für pflegende Angehörige.<br />
+            Für Eltern von Kindern mit Behinderung.<br />
+            Für Kinder, die plötzlich ihre Eltern begleiten müssen.<br />
+            Für alle, die lernen müssen, wie Pflege funktioniert.
+          </p>
+          <p style={{ fontSize: 16, color: '#a09a90', lineHeight: 1.9 }}>
+            Bescheide verstehen. Fristen erkennen. Ansprüche durchsetzen.<br />
+            Ohne Sozialrecht studiert zu haben.
+          </p>
+        </div>
+      </section>
+
       {/* ── SEKTION 2: PROBLEM ──────────────────── */}
       <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
@@ -319,6 +335,160 @@ export default function Home() {
           }}>
             Das ist nicht dein Versagen. Das ist das System.
           </p>
+        </div>
+      </section>
+
+      {/* ── SEKTION 2b: WARUM NICHT CHATGPT ────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#a09a90',
+            textAlign: 'center', marginBottom: 24,
+          }}>
+            Warum nicht einfach ChatGPT?
+          </p>
+
+          <h2 className="font-fraunces reveal-scroll" style={{
+            fontSize: 'clamp(28px, 4.5vw, 44px)',
+            fontWeight: 300, color: '#f0ede8',
+            textAlign: 'center', lineHeight: 1.2,
+            marginBottom: 72, letterSpacing: '-0.02em',
+          }}>
+            Die meisten brauchen keine<br />
+            bessere Antwort.<br />
+            <span style={{ color: '#a09a90' }}>Sie brauchen die richtige Frage.</span>
+          </h2>
+
+          {/* Zwei Spalten */}
+          <div className="reveal-scroll" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 20, marginBottom: 40,
+          }}>
+            {/* Links: Allgemeine KI */}
+            <div style={{
+              padding: '32px 28px', background: '#16162a',
+              borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <p style={{
+                fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
+                letterSpacing: '2px', color: '#a09a90', marginBottom: 24,
+              }}>
+                Allgemeine KI
+              </p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[
+                  'Wartet auf deine Frage',
+                  'Kennt deinen Fall nicht',
+                  'Kennt keine Fristen',
+                  'Kein Gedächtnis für Pflegefälle',
+                  'Keine Spezialisierung auf Pflege',
+                ].map((item) => (
+                  <li key={item} style={{
+                    fontSize: 14, color: '#6b6575', lineHeight: 1.7,
+                    paddingBottom: 10, display: 'flex', gap: 10, alignItems: 'flex-start',
+                  }}>
+                    <span style={{ color: '#3a3a5a', marginTop: 3, flexShrink: 0 }}>–</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Rechts: PflegeAssistent */}
+            <div style={{
+              padding: '32px 28px', background: 'rgba(212,134,10,0.06)',
+              borderRadius: 16, border: '1px solid rgba(212,134,10,0.25)',
+            }}>
+              <p style={{
+                fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
+                letterSpacing: '2px', color: '#d4860a', marginBottom: 24,
+              }}>
+                PflegeAssistent
+              </p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[
+                  'Fragt nach relevanten Details',
+                  'Erkennt typische Pflegefälle',
+                  'Weist auf Fristen hin',
+                  'Baut auf vorherigen Angaben auf',
+                  'Speziell für das deutsche Pflegesystem entwickelt',
+                ].map((item) => (
+                  <li key={item} style={{
+                    fontSize: 14, color: '#c8c0a0', lineHeight: 1.7,
+                    paddingBottom: 10, display: 'flex', gap: 10, alignItems: 'flex-start',
+                  }}>
+                    <span style={{ color: '#d4860a', marginTop: 3, flexShrink: 0 }}>✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Story-Block */}
+          <div className="reveal-scroll" style={{
+            background: '#16162a',
+            borderLeft: '4px solid #d4860a',
+            borderRadius: 12, padding: '24px 28px',
+            marginBottom: 52,
+          }}>
+            <p style={{
+              fontSize: 15, fontStyle: 'italic',
+              color: '#f0ede8', lineHeight: 1.8, marginBottom: 20,
+            }}>
+              „Mein Sohn hat Rett-Syndrom. Pflegegrad 3. Die Krankenkasse lehnt den Therapiestuhl ab."
+            </p>
+            <p style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, marginBottom: 6 }}>
+              Eine allgemeine KI liefert Informationen.
+            </p>
+            <p style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, marginBottom: 16 }}>
+              PflegeAssistent erkennt:
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {[
+                'mögliche Ablehnungsgründe',
+                'relevante Fristen',
+                'benötigte Unterlagen',
+                'Ansprechpartner',
+                'einen passenden Musterwiderspruch',
+              ].map((item) => (
+                <li key={item} style={{
+                  fontSize: 14, color: '#c8c0a0', lineHeight: 1.7,
+                  paddingBottom: 8, display: 'flex', gap: 10,
+                }}>
+                  <span style={{ color: '#d4860a', flexShrink: 0 }}>✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Abschluss + CTA */}
+          <div className="reveal-scroll" style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.85, marginBottom: 36 }}>
+              PflegeAssistent kennt nicht alles.<br />
+              Aber er kennt die Fragen, die pflegende Angehörige<br />
+              jeden Tag beantworten müssen.
+            </p>
+            <button
+              onClick={() => openChat('allgemein')}
+              style={{
+                background: '#d4860a', color: '#fff',
+                border: 'none', borderRadius: 9999,
+                padding: '14px 34px',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                transition: 'opacity .15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              Beispiel ausprobieren →
+            </button>
+          </div>
+
         </div>
       </section>
 
