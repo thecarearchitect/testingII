@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, Settings, Shield, ArrowRight, X } from 'lucide-react';
+import { Heart, Settings, Shield } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import PaperCanvas from '@/components/PaperCanvas';
 import DisclaimerModal from '@/components/DisclaimerModal';
@@ -10,7 +10,6 @@ import { ModeId, MODES } from '@/lib/modes';
 
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
-/* ── gradient configs per mode ─────────── */
 const CARD_STYLES: Record<ModeId, { prominent?: boolean }> = {
   allgemein:    { prominent: true  },
   formular:     {},
@@ -27,7 +26,6 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [userSettings, setUserSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [chatKey, setChatKey]         = useState(0);
-  const [hoveredMode, setHoveredMode] = useState<ModeId | null>(null);
 
   useEffect(() => {
     if (localStorage.getItem('disclaimer-accepted') === 'true') setAccepted(true);
@@ -35,6 +33,19 @@ export default function Home() {
     const saved = localStorage.getItem('user-settings');
     if (saved) { try { setUserSettings(JSON.parse(saved)); } catch {} }
   }, []);
+
+  useEffect(() => {
+    if (view !== 'welcome') return;
+    const els = document.querySelectorAll('.reveal-scroll');
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.15 }
+    );
+    els.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [view]);
 
   const handleAccept = () => {
     localStorage.setItem('disclaimer-accepted', 'true');
@@ -72,7 +83,6 @@ export default function Home() {
 
         {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />}
 
-        {/* Header */}
         <header className="glass-dark flex-shrink-0 relative z-10">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
             <button onClick={goHome} className="flex items-center gap-2.5 hover:opacity-75 transition-opacity group">
@@ -85,11 +95,10 @@ export default function Home() {
             </button>
 
             <div className="flex items-center gap-1">
-              {/* Mode switcher pills */}
               <div className="hidden sm:flex gap-1 mr-2">
                 {MODES.map(m => (
                   <button key={m.id}
-                    onClick={() => { setActiveMode(m.id); setChatKey(k => k+1); }}
+                    onClick={() => { setActiveMode(m.id); setChatKey(k => k + 1); }}
                     className={`px-2.5 py-1 rounded-lg text-xs transition-all ${
                       m.id === activeMode
                         ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40'
@@ -110,7 +119,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Mode label */}
         <div className="relative z-10 max-w-3xl mx-auto w-full px-4 pt-3 flex-shrink-0 flex items-center gap-2">
           <span className="text-base">{mode.icon}</span>
           <span className="text-xs text-white/35 font-medium">{mode.title}</span>
@@ -130,93 +138,422 @@ export default function Home() {
      WELCOME VIEW
   ────────────────────────────────────────── */
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Ambient orbs */}
-      <div className="orb orb-1" /><div className="orb orb-2" /><div className="orb orb-3" />
-
+    <div style={{ background: '#0a0a0f', minHeight: '100vh' }}>
       {showDisclaimer && <DisclaimerModal onAccept={handleAccept} />}
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />}
 
-      {/* Header */}
-      <header className="glass-dark relative z-10">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center">
-              <Heart size={14} className="text-amber-300" fill="currentColor" />
+      {/* ── Sticky Nav ──────────────────────── */}
+      <nav style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(10,10,15,0.88)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        <div style={{
+          maxWidth: 1100, margin: '0 auto',
+          padding: '0 24px', height: 60,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 8,
+              background: 'rgba(212,134,10,0.18)',
+              border: '1px solid rgba(212,134,10,0.30)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Heart size={14} color="#f59e0b" fill="#f59e0b" />
             </div>
-            <span className="font-fraunces font-semibold text-white/90 text-sm">
-              PflegeAssistent <span className="text-amber-400">KI</span>
+            <span className="font-fraunces" style={{ color: '#f0ede8', fontSize: 15, fontWeight: 600 }}>
+              PflegeAssistent <span style={{ color: '#d4860a' }}>KI</span>
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setShowSettings(true)}
-              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all ${
-                hasSettings
-                  ? 'text-amber-300 border-amber-400/40 bg-amber-500/10 hover:bg-amber-500/20'
-                  : 'text-white/40 border-white/10 hover:border-white/20 hover:text-white/60'
-              }`}>
-              <Settings size={12} />
-              <span className="hidden sm:inline">{hasSettings ? 'Mein Profil ✓' : 'Einstellungen'}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <button
+              onClick={() => setShowSettings(true)}
+              style={{
+                color: '#a09a90', fontSize: 13, background: 'none',
+                border: 'none', cursor: 'pointer', padding: '6px 0',
+              }}
+            >
+              Einstellungen
             </button>
-            <button onClick={() => setShowDisclaimer(true)}
-              className="w-8 h-8 flex items-center justify-center rounded-full text-white/30 hover:text-white/60 transition-colors">
-              <Shield size={14} />
+            <button
+              onClick={() => openChat('allgemein')}
+              style={{
+                background: '#d4860a', color: '#fff', border: 'none',
+                borderRadius: 9999, padding: '10px 22px',
+                fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              Starten →
             </button>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* Hero */}
-      <section
-        className="relative z-10 overflow-hidden"
-        style={{ background: '#0a0a0f' }}
-      >
-        {/* Canvas animation */}
+      {/* ── Hero ────────────────────────────── */}
+      <section style={{ position: 'relative', overflow: 'hidden', background: '#0a0a0f' }}>
         <PaperCanvas />
 
-        {/* Dark overlay for readability */}
         <div style={{
-          position: 'absolute', inset: 0,
-          background: 'rgba(10,10,15,0.60)',
-          zIndex: 1,
+          position: 'absolute', inset: 0, zIndex: 1,
+          background: 'radial-gradient(ellipse 70% 60% at 50% 90%, rgba(212,134,10,0.14) 0%, transparent 65%), rgba(10,10,15,0.62)',
         }} />
 
-        {/* Content */}
-        <div
-          className="relative text-center px-6 max-w-3xl mx-auto fade-up fade-up-1"
-          style={{
-            zIndex: 2,
-            paddingTop: 'clamp(80px, 14vw, 140px)',
-            paddingBottom: 'clamp(80px, 14vw, 140px)',
-          }}
-        >
-          <h1
-            className="font-fraunces font-light leading-tight mb-6"
-            style={{ fontSize: 'clamp(36px, 5.5vw, 56px)', color: '#f0ede8', letterSpacing: '-0.02em' }}
-          >
-            Ich bin für dich da.
-          </h1>
-
-          <p
-            className="leading-relaxed max-w-lg mx-auto mb-10"
-            style={{ fontSize: '18px', color: '#a09a90' }}
-          >
-            Pflege ist überwältigend.{' '}
-            <br className="hidden sm:block" />
-            Das Bürokratische muss es nicht sein.
+        <div style={{
+          position: 'relative', zIndex: 2,
+          maxWidth: 720, margin: '0 auto', textAlign: 'center',
+          padding: 'clamp(100px, 15vw, 160px) 24px',
+        }}>
+          <p className="fade-up fade-up-1" style={{
+            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+            letterSpacing: '3px', color: '#d4860a', marginBottom: 28,
+          }}>
+            KI-Assistent für pflegende Angehörige
           </p>
 
+          <h1 className="font-fraunces fade-up fade-up-2" style={{
+            fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 300,
+            lineHeight: 1.15, color: '#f0ede8',
+            letterSpacing: '-0.02em', marginBottom: 28,
+          }}>
+            Pflege verstehen.<br />
+            <span style={{ color: '#d4860a' }}>Ansprüche durchsetzen.</span>
+          </h1>
+
+          <p className="fade-up fade-up-3" style={{
+            fontSize: 18, color: '#a09a90', lineHeight: 1.7,
+            maxWidth: 480, margin: '0 auto 48px',
+          }}>
+            Bürokratie, Formulare, Widersprüche — du musst das nicht alleine verstehen.
+            Dein persönlicher Assistent für das deutsche Pflegesystem.
+          </p>
+
+          <div className="fade-up fade-up-4" style={{
+            display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap',
+          }}>
+            <button
+              onClick={() => openChat('allgemein')}
+              style={{
+                background: '#d4860a', color: '#fff', border: 'none',
+                borderRadius: 9999, padding: '16px 36px',
+                fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                boxShadow: '0 8px 32px rgba(212,134,10,0.35)',
+                transition: 'transform .15s, box-shadow .15s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 12px 40px rgba(212,134,10,0.45)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(212,134,10,0.35)';
+              }}
+            >
+              Erste Frage stellen →
+            </button>
+            <button
+              onClick={() => openChat('widerspruch')}
+              style={{
+                background: 'transparent', color: '#f0ede8',
+                border: '1px solid rgba(240,237,232,0.25)',
+                borderRadius: 9999, padding: '16px 36px',
+                fontSize: 15, fontWeight: 500, cursor: 'pointer',
+                transition: 'border-color .15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(240,237,232,0.5)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(240,237,232,0.25)')}
+            >
+              Pflegegrad prüfen lassen
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Problem ─────────────────────────── */}
+      <section style={{ background: '#111118', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+            letterSpacing: '3px', color: '#d4860a',
+            textAlign: 'center', marginBottom: 20,
+          }}>
+            Kennst du das?
+          </p>
+          <h2 className="font-fraunces reveal-scroll" style={{
+            fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 300,
+            color: '#f0ede8', textAlign: 'center',
+            marginBottom: 64, lineHeight: 1.25,
+          }}>
+            Das Pflegesystem ist komplex.<br />
+            Die Bürokratie ist erschöpfend.
+          </h2>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 24,
+          }}>
+            {[
+              { num: '01', text: 'Du erhältst einen Pflegegradsbescheid und weißt nicht, ob er korrekt ist.' },
+              { num: '02', text: 'Formulare stapeln sich — Fristen verstreichen, ohne dass du weißt, was gilt.' },
+              { num: '03', text: 'Du fragst beim MDK nach und verstehst die Antwort nicht.' },
+              { num: '04', text: 'Widerspruch einlegen klingt nach Arbeit, die du gerade nicht leisten kannst.' },
+            ].map(({ num, text }, i) => (
+              <div key={num} className="reveal-scroll" style={{
+                transitionDelay: `${i * 0.12}s`,
+                padding: '32px 28px',
+                background: '#16162a',
+                borderRadius: 16,
+                border: '1px solid rgba(255,255,255,0.05)',
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#d4860a', letterSpacing: '2px', marginBottom: 16 }}>
+                  {num}
+                </div>
+                <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.7 }}>{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Trust ───────────────────────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+            letterSpacing: '3px', color: '#d4860a',
+            textAlign: 'center', marginBottom: 60,
+          }}>
+            Warum dieser Assistent existiert
+          </p>
+
+          <div className="reveal-scroll" style={{ borderLeft: '3px solid #d4860a', paddingLeft: 36 }}>
+            <p className="font-fraunces" style={{
+              fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 300,
+              color: '#f0ede8', lineHeight: 1.65, marginBottom: 24,
+            }}>
+              Als mein Vater pflegebedürftig wurde, stand ich vor einem Berg aus Formularen,
+              Bescheiden und Fristen. Niemand erklärte mir, was ich wirklich tun konnte.
+            </p>
+            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.75, marginBottom: 20 }}>
+              Der Pflegegrad war zu niedrig eingestuft. Der Widerspruch erfolgreich — aber nur,
+              weil wir zufällig die richtigen Fragen gestellt haben. Nicht jeder hat dieses Glück.
+            </p>
+            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.75 }}>
+              Dieser Assistent gibt jedem pflegenden Angehörigen das Wissen, das früher nur
+              Sozialrechtlern vorbehalten war. Verständlich. Zugänglich. Kostenlos.
+            </p>
+            <p style={{ marginTop: 28, fontSize: 13, color: '#6b6575' }}>
+              — Der Gründer, pflegender Angehöriger
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Numbers ─────────────────────────── */}
+      <section style={{ background: '#111118', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 40, textAlign: 'center',
+          }}>
+            {[
+              { stat: '1 von 3', label: 'Pflegeeinstufungen sind zu niedrig' },
+              { stat: '6 Wochen', label: 'Widerspruchsfrist nach Erhalt des Bescheids' },
+              { stat: '0 €', label: 'kostet der erste Schritt mit diesem Assistenten' },
+            ].map(({ stat, label }) => (
+              <div key={stat} className="reveal-scroll">
+                <div className="font-fraunces" style={{
+                  fontSize: 'clamp(36px, 5vw, 48px)', fontWeight: 700,
+                  color: '#d4860a', lineHeight: 1, marginBottom: 14,
+                }}>
+                  {stat}
+                </div>
+                <p style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.6 }}>{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ────────────────────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+            letterSpacing: '3px', color: '#d4860a',
+            textAlign: 'center', marginBottom: 20,
+          }}>
+            Was du hier tun kannst
+          </p>
+          <h2 className="font-fraunces reveal-scroll" style={{
+            fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 300,
+            color: '#f0ede8', textAlign: 'center',
+            marginBottom: 56, lineHeight: 1.25,
+          }}>
+            Konkrete Hilfe, nicht abstrakte Ratschläge.
+          </h2>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 20,
+          }}>
+            {[
+              {
+                id: 'widerspruch' as ModeId,
+                title: 'Widerspruch schreiben',
+                desc: 'Erhalte einen vollständigen Widerspruchstext — angepasst an deinen Bescheid, mit den richtigen gesetzlichen Grundlagen.',
+                cta: 'Widerspruch starten →',
+              },
+              {
+                id: 'allgemein' as ModeId,
+                title: 'Pflegegrad verstehen',
+                desc: 'Was bedeutet dein Gutachten? Welche Kriterien wurden wie bewertet? Wir erklären es dir auf Augenhöhe.',
+                cta: 'Pflegegrad prüfen →',
+              },
+              {
+                id: 'formular' as ModeId,
+                title: 'Formular ausfüllen',
+                desc: 'Kein Formular mehr, das du alleine durchkämpfst. Erhalte Schritt-für-Schritt-Hilfe für jeden Antrag.',
+                cta: 'Formular öffnen →',
+              },
+              {
+                id: 'pflegealltag' as ModeId,
+                title: 'Pflegealltag meistern',
+                desc: 'Von Hilfsmitteln bis zu Entlastungsleistungen — erfahre, was dir zusteht und wie du es bekommst.',
+                cta: 'Alltag entlasten →',
+              },
+              {
+                id: 'rechtlich' as ModeId,
+                title: 'Rechtliche Fragen',
+                desc: 'Vollmachten, Betreuungsrecht, § 15 SGB XI — klare Antworten auf Fragen, die du vielleicht noch nicht gestellt hast.',
+                cta: 'Rechtsfrage klären →',
+              },
+            ].map(({ id, title, desc, cta }, i) => (
+              <div key={id} className="reveal-scroll" style={{
+                transitionDelay: `${i * 0.1}s`,
+                padding: '32px 28px',
+                background: '#16162a',
+                borderRadius: 16,
+                border: '1px solid rgba(255,255,255,0.05)',
+                display: 'flex', flexDirection: 'column',
+              }}>
+                <h3 className="font-fraunces" style={{
+                  fontSize: 20, fontWeight: 600,
+                  color: '#f0ede8', marginBottom: 12, lineHeight: 1.3,
+                }}>
+                  {title}
+                </h3>
+                <p style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, flexGrow: 1 }}>{desc}</p>
+                <button
+                  onClick={() => openChat(id)}
+                  style={{
+                    marginTop: 24, background: 'none', border: 'none',
+                    color: '#d4860a', fontSize: 13, fontWeight: 600,
+                    cursor: 'pointer', textAlign: 'left', padding: 0,
+                    transition: 'opacity .15s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  {cta}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Testimonials ────────────────────── */}
+      <section style={{ background: '#111118', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+            letterSpacing: '3px', color: '#d4860a',
+            textAlign: 'center', marginBottom: 56,
+          }}>
+            Was andere sagen
+          </p>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 24,
+          }}>
+            {[
+              {
+                quote: 'Ich wusste nicht mal, dass ich Widerspruch einlegen kann. Jetzt haben wir Pflegegrad 3 — rückwirkend.',
+                role: 'Pflegende Tochter, Berlin',
+              },
+              {
+                quote: 'Endlich jemand, der mir erklärt, was in diesen Formularen steht. Ohne Fachchinesisch.',
+                role: 'Ehemann einer Pflegebedürftigen, München',
+              },
+              {
+                quote: 'Der Assistent hat mir in 10 Minuten mehr geholfen als die Pflegekasse in drei Monaten.',
+                role: 'Pflegender Sohn, Hamburg',
+              },
+            ].map(({ quote, role }, i) => (
+              <div key={role} className="reveal-scroll" style={{
+                transitionDelay: `${i * 0.12}s`,
+                padding: '32px 28px',
+                background: '#16162a',
+                borderRadius: 16,
+                border: '1px solid rgba(255,255,255,0.05)',
+              }}>
+                <p className="font-fraunces" style={{
+                  fontSize: 17, fontStyle: 'italic', fontWeight: 300,
+                  color: '#f0ede8', lineHeight: 1.65, marginBottom: 20,
+                }}>
+                  &ldquo;{quote}&rdquo;
+                </p>
+                <p style={{ fontSize: 12, color: '#6b6575', fontWeight: 500 }}>— {role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ─────────────────────────────── */}
+      <section style={{ background: '#d4860a', padding: 'clamp(80px, 10vw, 120px) 24px' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+          <h2 className="font-fraunces reveal-scroll" style={{
+            fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 300,
+            color: '#1a0e00', lineHeight: 1.2, marginBottom: 20,
+          }}>
+            Deine erste Frage wartet.
+          </h2>
+          <p className="reveal-scroll" style={{
+            fontSize: 17, color: 'rgba(26,14,0,0.65)',
+            lineHeight: 1.65, marginBottom: 44,
+          }}>
+            Kostenlos, anonym, ohne Registrierung.<br />
+            Einfach fragen.
+          </p>
           <button
+            className="reveal-scroll"
             onClick={() => openChat('allgemein')}
-            className="inline-flex items-center gap-2 font-semibold transition-all duration-200
-                       hover:-translate-y-0.5 hover:brightness-110"
             style={{
-              background: '#d4860a',
-              color: '#fff',
-              borderRadius: '9999px',
-              padding: '16px 32px',
-              fontSize: '15px',
-              boxShadow: '0 8px 32px rgba(212,134,10,0.35)',
+              background: '#1a0e00', color: '#f5c97a',
+              border: 'none', borderRadius: 9999,
+              padding: '18px 44px', fontSize: 16, fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+              transition: 'transform .15s, box-shadow .15s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.35)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = '';
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.25)';
             }}
           >
             Jetzt starten →
@@ -224,186 +561,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mode cards grid */}
-      <section
-        className="relative z-10 max-w-5xl mx-auto px-6 pb-20"
-        style={{ background: '#0a0a0f' }}
-      >
-        <p
-          className="text-center mb-8"
-          style={{
-            fontSize: '11px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '2px',
-            color: '#a09a90',
-          }}
-        >
-          Womit kann ich dir helfen?
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-
-          {/* Persönlicher Kontext — erste Karte */}
-          <button
-            onClick={() => setShowSettings(true)}
-            onMouseEnter={() => setHoveredMode('allgemein' as ModeId)}
-            onMouseLeave={() => setHoveredMode(null)}
-            className="mode-card text-left p-6 rounded-2xl fade-up"
-            style={{
-              animationDelay: '0.08s',
-              background: 'transparent',
-              border: '1px dashed rgba(212,134,10,0.30)',
-              boxShadow: 'none',
-              transition: 'border-color .2s',
-            }}
-          >
-            <h3
-              className="font-fraunces font-semibold mb-2"
-              style={{ fontSize: '17px', color: '#d4860a', lineHeight: 1.3 }}
-            >
-              Persönlicher Kontext
-            </h3>
-            <p style={{ fontSize: '13px', color: '#6b6575', lineHeight: 1.6 }}>
-              {hasSettings
-                ? 'Dein Profil ist aktiv – die KI kennt deine Situation.'
-                : 'Einmalig deine Situation schildern – alle Antworten werden persönlicher.'}
-            </p>
-            <div className="mt-5 text-xs font-medium" style={{ color: '#d4860a', opacity: 0.6 }}>
-              {hasSettings ? 'Profil bearbeiten →' : 'Profil anlegen →'}
-            </div>
-          </button>
-
-          {/* Mode cards */}
-          {MODES.map((mode, i) => {
-            const { prominent } = CARD_STYLES[mode.id];
-            const isHovered = hoveredMode === mode.id;
-            return (
-              <button
-                key={mode.id}
-                onClick={() => openChat(mode.id)}
-                onMouseEnter={() => setHoveredMode(mode.id)}
-                onMouseLeave={() => setHoveredMode(null)}
-                className="mode-card text-left p-6 rounded-2xl fade-up"
-                style={{
-                  animationDelay: `${0.08 * (i + 2)}s`,
-                  background: isHovered ? '#1e1e30' : '#16162a',
-                  border: `1px solid ${isHovered ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
-                  boxShadow: isHovered ? '0 16px 48px rgba(0,0,0,0.5)' : '0 2px 16px rgba(0,0,0,0.4)',
-                  transition: 'background .2s, border-color .2s, box-shadow .2s, transform .2s',
-                }}
-              >
-                <h3
-                  className="font-fraunces font-semibold mb-2"
-                  style={{
-                    fontSize: prominent ? '19px' : '17px',
-                    color: prominent ? '#d4860a' : '#f0ede8',
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {mode.title}
-                </h3>
-                <p style={{ fontSize: '13px', color: '#6b6575', lineHeight: 1.6 }}>
-                  {mode.subtitle}
-                </p>
-                <div
-                  className="mt-5 text-xs font-medium"
-                  style={{ color: isHovered ? '#d4860a' : '#4a4455' }}
-                >
-                  Jetzt fragen →
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ── Trust section ───────────────────────── */}
-      <section
-        className="relative z-10 px-6 py-20"
-        style={{ background: '#111118' }}
-      >
-        <div className="max-w-3xl mx-auto">
-
-          {/* Eyebrow */}
-          <p className="text-center mb-8" style={{
-            fontSize: '11px', fontWeight: 600,
-            textTransform: 'uppercase', letterSpacing: '2px', color: '#a09a90',
-          }}>
-            Warum vertrauen?
-          </p>
-
-          {/* Main statement */}
-          <p className="font-fraunces text-center mb-14 leading-snug" style={{
-            fontSize: 'clamp(22px, 3.5vw, 32px)', color: '#f0ede8',
-            fontWeight: 300,
-          }}>
-            Wir ersetzen keine Pflegefachkraft.<br />
-            Wir geben dir die Information,<br />
-            die du brauchst, um auf Augenhöhe zu sein.
-          </p>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-6 mb-14 text-center">
-            {[
-              { num: '1 von 3', label: 'Pflegeeinstufungen sind zu niedrig' },
-              { num: '6 Wochen', label: 'hat man Zeit für einen Widerspruch' },
-              { num: '0€', label: 'kostet der erste Schritt' },
-            ].map(({ num, label }) => (
-              <div key={num}>
-                <div className="font-fraunces mb-2" style={{
-                  fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 700, color: '#d4860a', lineHeight: 1,
-                }}>
-                  {num}
-                </div>
-                <div style={{ fontSize: '14px', color: '#a09a90', lineHeight: 1.5 }}>
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Testimonials */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              {
-                quote: 'Ich wusste nicht mal, dass ich Widerspruch einlegen kann. Jetzt haben wir Pflegegrad 3.',
-                name: 'Sandra K., pflegende Tochter',
-              },
-              {
-                quote: 'Endlich jemand, der mir erklärt, was in diesen Formularen steht.',
-                name: 'Thomas M., Ehemann einer Pflegebedürftigen',
-              },
-            ].map(({ quote, name }) => (
-              <div key={name} className="rounded-2xl p-6" style={{
-                background: '#1a1a2e',
-                border: '1px solid rgba(255,255,255,0.06)',
-              }}>
-                <p className="font-fraunces mb-5 leading-relaxed" style={{
-                  fontSize: '16px', color: '#f0ede8', fontStyle: 'italic',
-                }}>
-                  &ldquo;{quote}&rdquo;
-                </p>
-                <p style={{ fontSize: '13px', color: '#a09a90' }}>— {name}</p>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* Footer disclaimer */}
-      <footer
-        className="relative z-10 text-center px-6 pb-10"
-        style={{ background: '#0a0a0f' }}
-      >
-        <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.7 }}>
+      {/* ── Footer ──────────────────────────── */}
+      <footer style={{
+        background: '#080808',
+        padding: '40px 24px',
+        textAlign: 'center',
+      }}>
+        <p style={{
+          fontSize: 12, color: '#555',
+          lineHeight: 1.8, maxWidth: 600, margin: '0 auto',
+        }}>
           Alle Informationen basieren auf öffentlichem Fachwissen aus deutschen Pflegekassen,
-          Sozialverbänden und Behörden. Kein Ersatz für individuelle Beratung.{' '}
+          Sozialverbänden und Behörden. Kein Ersatz für individuelle Rechts- oder Pflegeberatung.{' '}
           <button
             onClick={() => setShowDisclaimer(true)}
-            className="underline"
-            style={{ color: '#666' }}
+            style={{
+              color: '#555', background: 'none', border: 'none',
+              cursor: 'pointer', textDecoration: 'underline', fontSize: 12,
+            }}
           >
             Hinweise lesen
           </button>
