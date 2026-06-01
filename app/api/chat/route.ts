@@ -5,6 +5,13 @@ import { NextRequest } from 'next/server';
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: 'API-Schlüssel fehlt. Bitte ANTHROPIC_API_KEY in den Vercel-Umgebungsvariablen hinterlegen.' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const { messages, modeId, userSettings } = await req.json();
 

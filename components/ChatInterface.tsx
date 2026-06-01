@@ -69,7 +69,15 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
         signal: abortRef.current.signal,
       });
 
-      if (!response.ok || !response.body) throw new Error('API error');
+      if (!response.ok) {
+        let msg = 'KI-Assistent nicht erreichbar (HTTP ' + response.status + ').';
+        try {
+          const data = await response.json();
+          if (data?.error) msg = data.error;
+        } catch {}
+        throw new Error(msg);
+      }
+      if (!response.body) throw new Error('Keine Antwort vom Server erhalten.');
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -90,7 +98,8 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
         return;
       }
       setMessages((prev) => prev.slice(0, -1));
-      setError('Keine Verbindung zum KI-Assistenten. Bitte versuche es erneut.');
+      const msg = err instanceof Error ? err.message : 'Unbekannter Fehler.';
+      setError(msg);
     } finally {
       setIsLoading(false);
       abortRef.current = null;
