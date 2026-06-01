@@ -10,12 +10,12 @@ import { ModeId, MODES } from '@/lib/modes';
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
 /* ── gradient configs per mode ─────────── */
-const CARD_STYLES: Record<ModeId, { gradient: string; glow: string; emoji: string }> = {
-  allgemein:   { gradient: 'from-blue-900/60 to-indigo-800/40',   glow: 'rgba(99,102,241,0.3)',  emoji: '💬' },
-  formular:    { gradient: 'from-emerald-900/60 to-teal-800/40',  glow: 'rgba(16,185,129,0.3)',  emoji: '📋' },
-  widerspruch: { gradient: 'from-orange-900/60 to-amber-800/40',  glow: 'rgba(245,158,11,0.3)',  emoji: '✍️' },
-  pflegealltag:{ gradient: 'from-purple-900/60 to-pink-800/40',   glow: 'rgba(168,85,247,0.3)',  emoji: '🏠' },
-  rechtlich:   { gradient: 'from-rose-900/60 to-red-800/40',      glow: 'rgba(244,63,94,0.3)',   emoji: '⚖️' },
+const CARD_STYLES: Record<ModeId, { abbr: string }> = {
+  allgemein:    { abbr: 'AH' },
+  formular:     { abbr: 'FM' },
+  widerspruch:  { abbr: 'WS' },
+  pflegealltag: { abbr: 'PA' },
+  rechtlich:    { abbr: 'RQ' },
 };
 
 export default function Home() {
@@ -214,73 +214,116 @@ export default function Home() {
       </section>
 
       {/* Mode cards grid */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 pb-16">
-        <p className="text-xs font-semibold text-white/25 uppercase tracking-widest text-center mb-6">
+      <section
+        className="relative z-10 max-w-5xl mx-auto px-6 pb-20"
+        style={{ background: '#0a0a0f' }}
+      >
+        <p
+          className="text-center mb-8"
+          style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+            color: '#a09a90',
+          }}
+        >
           Womit kann ich dir helfen?
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {MODES.map((mode, i) => {
-            const style = CARD_STYLES[mode.id];
+            const { abbr } = CARD_STYLES[mode.id];
+            const isHovered = hoveredMode === mode.id;
             return (
               <button
                 key={mode.id}
                 onClick={() => openChat(mode.id)}
                 onMouseEnter={() => setHoveredMode(mode.id)}
                 onMouseLeave={() => setHoveredMode(null)}
-                className={`mode-card text-left p-5 rounded-2xl bg-gradient-to-br ${style.gradient}
-                            backdrop-blur-xl border border-white/10 hover:border-white/20
-                            fade-up`}
+                className="mode-card text-left p-6 rounded-2xl fade-up"
                 style={{
-                  animationDelay: `${0.1 * (i + 1)}s`,
-                  boxShadow: hoveredMode === mode.id
-                    ? `0 20px 60px ${style.glow}, 0 0 0 1px rgba(255,255,255,0.12)`
-                    : '0 4px 24px rgba(0,0,0,0.3)',
+                  animationDelay: `${0.08 * (i + 1)}s`,
+                  background: isHovered ? '#1e1e30' : '#16162a',
+                  border: `1px solid ${isHovered ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
+                  boxShadow: isHovered ? '0 16px 48px rgba(0,0,0,0.5)' : '0 2px 16px rgba(0,0,0,0.4)',
+                  transition: 'background .2s, border-color .2s, box-shadow .2s, transform .2s',
                 }}
               >
-                <div className="text-3xl mb-3">{style.emoji}</div>
-                <h3 className="font-fraunces text-white/90 font-semibold text-base mb-1.5">
+                <div
+                  className="font-fraunces mb-4 font-semibold"
+                  style={{ fontSize: '11px', letterSpacing: '2px', color: '#d4860a' }}
+                >
+                  {abbr}
+                </div>
+                <h3
+                  className="font-fraunces font-semibold mb-2"
+                  style={{ fontSize: '17px', color: '#f0ede8', lineHeight: 1.3 }}
+                >
                   {mode.title}
                 </h3>
-                <p className="text-white/40 text-xs leading-relaxed">
+                <p style={{ fontSize: '13px', color: '#6b6575', lineHeight: 1.6 }}>
                   {mode.subtitle}
                 </p>
-                <div className="mt-4 flex items-center gap-1 text-white/30 text-xs font-medium group-hover:text-white/50">
-                  <span>Jetzt fragen</span>
-                  <ArrowRight size={11} />
+                <div
+                  className="mt-5 text-xs font-medium"
+                  style={{ color: isHovered ? '#d4860a' : '#4a4455' }}
+                >
+                  Jetzt fragen →
                 </div>
               </button>
             );
           })}
 
-          {/* Personal context CTA card */}
+          {/* Personal context card */}
           <button
             onClick={() => setShowSettings(true)}
-            className="mode-card text-left p-5 rounded-2xl backdrop-blur-xl
-                       border border-dashed border-amber-400/25 hover:border-amber-400/50
-                       bg-amber-500/5 hover:bg-amber-500/10 transition-colors"
-            style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.2)' }}
+            onMouseEnter={() => setHoveredMode('allgemein' as ModeId)}
+            onMouseLeave={() => setHoveredMode(null)}
+            className="mode-card text-left p-6 rounded-2xl fade-up"
+            style={{
+              animationDelay: '0.56s',
+              background: 'transparent',
+              border: '1px dashed rgba(212,134,10,0.25)',
+              boxShadow: 'none',
+              transition: 'border-color .2s',
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = 'rgba(212,134,10,0.5)'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(212,134,10,0.25)'}
           >
-            <div className="text-3xl mb-3">✨</div>
-            <h3 className="font-fraunces text-amber-300/80 font-semibold text-base mb-1.5">
+            <div
+              className="font-fraunces mb-4 font-semibold"
+              style={{ fontSize: '11px', letterSpacing: '2px', color: '#d4860a' }}
+            >
+              PK
+            </div>
+            <h3
+              className="font-fraunces font-semibold mb-2"
+              style={{ fontSize: '17px', color: '#d4860a', lineHeight: 1.3, opacity: 0.8 }}
+            >
               Persönlicher Kontext
             </h3>
-            <p className="text-white/30 text-xs leading-relaxed">
+            <p style={{ fontSize: '13px', color: '#6b6575', lineHeight: 1.6 }}>
               {hasSettings
                 ? 'Dein Profil ist aktiv – die KI kennt deine Situation.'
-                : 'Erzähl mir einmalig von deiner Situation – dann werden alle Antworten persönlicher.'}
+                : 'Einmalig deine Situation schildern – alle Antworten werden persönlicher.'}
             </p>
-            <div className="mt-4 text-xs text-amber-400/50 font-medium">
+            <div className="mt-5 text-xs font-medium" style={{ color: '#d4860a', opacity: 0.5 }}>
               {hasSettings ? 'Profil bearbeiten →' : 'Profil anlegen →'}
             </div>
           </button>
         </div>
 
         {/* Bottom disclaimer */}
-        <p className="text-center text-xs text-white/20 mt-10 max-w-lg mx-auto leading-relaxed">
+        <p className="text-center mt-12 max-w-lg mx-auto leading-relaxed"
+           style={{ fontSize: '12px', color: '#3d3848' }}>
           Alle Informationen basieren auf öffentlichem Fachwissen aus deutschen Pflegekassen,
           Sozialverbänden und Behörden. Kein Ersatz für individuelle Beratung.{' '}
-          <button onClick={() => setShowDisclaimer(true)} className="underline hover:text-white/40 transition-colors">
+          <button
+            onClick={() => setShowDisclaimer(true)}
+            className="underline transition-colors"
+            style={{ color: '#3d3848' }}
+          >
             Hinweise lesen
           </button>
         </p>
