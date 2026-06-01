@@ -2,13 +2,11 @@ import Anthropic from '@anthropic-ai/sdk';
 import { MODES, ModeId } from '@/lib/modes';
 import { NextRequest } from 'next/server';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, modeId } = await req.json();
+    const { messages, modeId, userSettings } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Ungültige Anfrage' }), {
@@ -19,14 +17,24 @@ export async function POST(req: NextRequest) {
 
     const mode = MODES.find((m) => m.id === (modeId as ModeId)) ?? MODES[0];
 
-    const systemPrompt = `${mode.systemPrompt}
+    // Build personal context block
+    const personalBlock = userSettings?.personalContext?.trim()
+      ? `\n\n---\nPERSÖNLICHER KONTEXT DES NUTZERS:\n${userSettings.personalContext.trim()}\n\nBerücksichtige diesen Kontext in allen Antworten. Beziehe dich darauf, wo es sinnvoll ist.`
+      : '';
 
+    const instructionsBlock = userSettings?.customInstructions?.trim()
+      ? `\n\nEIGENE ANWEISUNGEN DES NUTZERS:\n${userSettings.customInstructions.trim()}\n\nHalte dich strikt an diese Anweisungen.`
+      : '';
+
+    const systemPrompt = `${mode.systemPrompt}${personalBlock}${instructionsBlock}
+
+---
 Formatierungshinweise:
 - Strukturiere längere Antworten mit klaren Absätzen
 - Nutze Listen (mit Bindestrichen) für Aufzählungen
 - Hebe wichtige Begriffe mit **Fettschrift** hervor
-- Bei Musterbriefen: Formatiere sie klar und vollständig
-- Bleibe immer sachlich, empathisch und lösungsorientiert`;
+- Bei Musterbriefen: vollständig und direkt verwendbar formatieren
+- Bleibe sachlich, empathisch und lösungsorientiert`;
 
     const stream = await client.messages.stream({
       model: 'claude-sonnet-4-6',
@@ -42,10 +50,7 @@ Formatierungshinweise:
     const readable = new ReadableStream({
       async start(controller) {
         for await (const chunk of stream) {
-          if (
-            chunk.type === 'content_block_delta' &&
-            chunk.delta.type === 'text_delta'
-          ) {
+          if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
             controller.enqueue(encoder.encode(chunk.delta.text));
           }
         }

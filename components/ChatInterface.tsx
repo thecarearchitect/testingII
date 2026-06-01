@@ -5,13 +5,19 @@ import { Send, Trash2, Square, AlertCircle } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import StarterQuestions from './StarterQuestions';
 import { MODES, ModeId } from '@/lib/modes';
+import { UserSettings } from './SettingsPanel';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export default function ChatInterface({ modeId }: { modeId: ModeId }) {
+interface ChatInterfaceProps {
+  modeId: ModeId;
+  userSettings: UserSettings;
+}
+
+export default function ChatInterface({ modeId, userSettings }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +65,7 @@ export default function ChatInterface({ modeId }: { modeId: ModeId }) {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages, modeId }),
+        body: JSON.stringify({ messages: newMessages, modeId, userSettings }),
         signal: abortRef.current.signal,
       });
 
@@ -89,7 +95,7 @@ export default function ChatInterface({ modeId }: { modeId: ModeId }) {
       setIsLoading(false);
       abortRef.current = null;
     }
-  }, [messages, modeId, isLoading]);
+  }, [messages, modeId, isLoading, userSettings]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -143,15 +149,15 @@ export default function ChatInterface({ modeId }: { modeId: ModeId }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Disclaimer strip */}
       {messages.length > 0 && (
         <p className="text-center text-xs text-white/20 px-4 pb-1">
           ⚠️ Allgemeine Informationen – kein Ersatz für individuelle Fachberatung
         </p>
       )}
 
-      {/* Input */}
-      <div className="glass-dark border-t-0 rounded-b-none px-4 py-3">
+      {/* Input area – fixed dark background so text is always readable */}
+      <div className="flex-shrink-0 px-4 py-3"
+           style={{ background: 'rgba(10,8,5,0.75)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         {messages.length > 0 && (
           <div className="flex justify-end mb-2">
             <button
@@ -173,11 +179,15 @@ export default function ChatInterface({ modeId }: { modeId: ModeId }) {
             placeholder={`Deine Frage zu „${activeMode.title}"…`}
             rows={1}
             disabled={isLoading}
-            className="flex-1 resize-none rounded-xl bg-white/8 border border-white/10
-                       px-4 py-2.5 text-sm text-white/90 placeholder-white/25
-                       focus:outline-none focus:ring-1 focus:ring-amber-400/40 focus:border-amber-400/30
-                       focus:bg-white/12 transition-all"
-            style={{ minHeight: '42px', maxHeight: '120px' }}
+            className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm leading-relaxed
+                       focus:outline-none focus:ring-1 focus:ring-amber-400/40 transition-all"
+            style={{
+              minHeight: '42px',
+              maxHeight: '120px',
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              color: 'rgba(255,255,255,0.9)',
+            }}
           />
 
           {isLoading ? (
