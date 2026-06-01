@@ -44,43 +44,39 @@ export default function ImpressumPage() {
         </h1>
 
         <Section title="Angaben gemäß § 5 TMG">
-          <Placeholder label="Betreiber / Name" value="[IHR VOLLSTÄNDIGER NAME]" />
-          <Placeholder label="Straße und Hausnummer" value="[IHRE STRASSE NR.]" />
-          <Placeholder label="PLZ und Ort" value="[PLZ ORT]" />
-          <Placeholder label="Land" value="Deutschland" />
+          <Field label="Betreiber" value="Markus Friese" />
+          <Field label="Straße und Hausnummer" value="Jürgen-Toepfer-Straße 51" />
+          <Field label="PLZ und Ort" value="22763 Hamburg" />
+          <Field label="Land" value="Deutschland" />
         </Section>
 
         <Section title="Kontakt">
-          <Placeholder label="E-Mail" value="[IHRE@EMAIL.DE]" />
+          <Field label="E-Mail" value="friese.markus2@googlemail.com" />
           <p style={hint}>
-            Hinweis: Eine Telefonnummer ist nach § 5 TMG empfohlen, aber derzeit bei reinen Online-Diensten unter bestimmten Bedingungen nicht zwingend erforderlich. Lassen Sie dies rechtlich prüfen.
+            Hinweis: Eine Telefonnummer ist nach § 5 TMG empfohlen. Bei reinen Online-Diensten bestehen unter bestimmten Umständen Ausnahmen — bitte rechtlich prüfen lassen.
           </p>
         </Section>
 
         <Section title="Verantwortlich für den Inhalt (§ 55 Abs. 2 RStV)">
-          <Placeholder label="Name" value="[IHR VOLLSTÄNDIGER NAME]" />
-          <Placeholder label="Anschrift" value="[WIE OBEN]" />
-        </Section>
-
-        <Section title="Umsatzsteuer-ID (optional)">
-          <Placeholder label="USt-IdNr." value="[DE XXXXXXXXX — falls vorhanden, sonst Abschnitt löschen]" />
+          <Field label="Name" value="Markus Friese" />
+          <Field label="Anschrift" value="Jürgen-Toepfer-Straße 51, 22763 Hamburg" />
         </Section>
 
         <Section title="Haftung für Inhalte">
           <p style={body}>
-            Die Inhalte dieser App wurden mit größtmöglicher Sorgfalt erstellt. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte nach den allgemeinen Gesetzen verantwortlich. Die App bietet allgemeine Informationen zu Pflegethemen und stellt keine Rechts-, Medizin- oder Finanzberatung dar.
+            Die Inhalte dieser App wurden mit größtmöglicher Sorgfalt erstellt. Als Diensteanbieter bin ich gemäß § 7 Abs. 1 TMG für eigene Inhalte nach den allgemeinen Gesetzen verantwortlich. Die App bietet allgemeine Informationen zu Pflegethemen und stellt keine Rechts-, Medizin- oder Finanzberatung dar.
           </p>
         </Section>
 
         <Section title="Haftung für Links">
           <p style={body}>
-            Unser Angebot enthält möglicherweise Links zu externen Webseiten Dritter. Auf deren Inhalte haben wir keinen Einfluss und übernehmen dafür keine Gewähr.
+            Dieses Angebot enthält möglicherweise Links zu externen Webseiten Dritter. Auf deren Inhalte habe ich keinen Einfluss und übernehme dafür keine Gewähr.
           </p>
         </Section>
 
         <Section title="Urheberrecht">
           <p style={body}>
-            Die durch den Betreiber erstellten Inhalte und Werke unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors.
+            Die durch den Betreiber erstellten Inhalte und Werke unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Autors.
           </p>
         </Section>
 
@@ -117,13 +113,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Placeholder({ label, value }: { label: string; value: string }) {
+function Field({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <span style={{ fontSize: 12, color: '#6b6575', marginRight: 8 }}>{label}:</span>
-      <span style={{ fontSize: 14, color: value.startsWith('[') ? '#d4860a' : '#f0ede8', fontStyle: value.startsWith('[') ? 'italic' : 'normal' }}>
-        {value}
-      </span>
+      <span style={{ fontSize: 14, color: '#f0ede8' }}>{value}</span>
     </div>
   );
 }

@@ -47,9 +47,9 @@ export default function DatenschutzPage() {
         </p>
 
         <Section title="1. Verantwortlicher">
-          <Placeholder label="Name / Betreiber" value="[IHR VOLLSTÄNDIGER NAME]" />
-          <Placeholder label="Anschrift" value="[STRASSE NR., PLZ ORT]" />
-          <Placeholder label="E-Mail" value="[IHRE@EMAIL.DE]" />
+          <Field label="Name" value="Markus Friese" />
+          <Field label="Anschrift" value="Jürgen-Toepfer-Straße 51, 22763 Hamburg" />
+          <Field label="E-Mail" value="friese.markus2@googlemail.com" />
           <p style={note}>
             Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte wenden Sie sich bitte an die oben genannte E-Mail-Adresse.
           </p>
@@ -57,7 +57,7 @@ export default function DatenschutzPage() {
 
         <Section title="2. Allgemeines zur Datenverarbeitung">
           <p style={body}>
-            Wir nehmen den Schutz Ihrer persönlichen Daten ernst. Diese Datenschutzerklärung informiert Sie darüber, welche Daten bei der Nutzung dieser App verarbeitet werden.
+            Ich nehme den Schutz Ihrer persönlichen Daten ernst. Diese Datenschutzerklärung informiert Sie darüber, welche Daten bei der Nutzung dieser App verarbeitet werden.
           </p>
           <p style={body}>
             <strong style={{ color: '#f0ede8' }}>Keine Pflichtangaben:</strong> Die Nutzung der App erfordert keine Registrierung, keinen Login und keine Angabe personenbezogener Daten.
@@ -69,7 +69,7 @@ export default function DatenschutzPage() {
             Diese App wird gehostet bei <strong style={{ color: '#f0ede8' }}>Vercel Inc.</strong>, 340 Pine Street, Suite 700, San Francisco, CA 94104, USA.
           </p>
           <p style={body}>
-            Beim Aufruf der App werden automatisch Verbindungsdaten (IP-Adresse, Browsertyp, Betriebssystem, Datum und Uhrzeit des Zugriffs) in Server-Logs gespeichert. Diese Verarbeitung erfolgt auf Basis von Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an sicherem Betrieb).
+            Beim Aufruf der App werden automatisch Verbindungsdaten (IP-Adresse, Browsertyp, Betriebssystem, Datum und Uhrzeit) in Server-Logs gespeichert. Diese Verarbeitung erfolgt auf Basis von Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse am sicheren Betrieb).
           </p>
           <p style={body}>
             Da Vercel ein US-amerikanisches Unternehmen ist, kann es zu einer Datenübertragung in die USA kommen. Vercel ist unter dem EU-U.S. Data Privacy Framework zertifiziert. Weitere Informationen: <span style={{ color: '#d4860a' }}>vercel.com/legal/privacy-policy</span>
@@ -81,15 +81,24 @@ export default function DatenschutzPage() {
             Die Chatfunktion nutzt die API von <strong style={{ color: '#f0ede8' }}>Anthropic, PBC</strong>, 548 Market St PMB 90375, San Francisco, CA 94104, USA.
           </p>
           <p style={body}>
-            Wenn Sie eine Frage stellen oder ein Dokument hochladen, wird Ihre Eingabe an die Anthropic-API übertragen und dort verarbeitet. Die Verarbeitung erfolgt auf Basis von Art. 6 Abs. 1 lit. f DSGVO (Bereitstellung des Kerndienstes).
+            Wenn Sie eine Frage stellen oder ein Dokument hochladen, wird Ihre Eingabe zur Verarbeitung an die Anthropic-API übertragen. Die Rechtsgrundlage hierfür ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bereitstellung des Kerndienstes).
           </p>
           <p style={body}>
-            <strong style={{ color: '#f0ede8' }}>Wichtig:</strong> Bitte geben Sie keine sensiblen personenbezogenen Daten (wie vollständige Namen, Adressen, Sozialversicherungsnummern) in den Chat ein, die nicht für die Beantwortung Ihrer Frage erforderlich sind.
+            <strong style={{ color: '#f0ede8' }}>Empfehlung:</strong> Bitte geben Sie keine Angaben ein, die über den Zweck Ihrer Pflegefrage hinausgehen (z. B. vollständige Klarnamen, Sozialversicherungsnummern, Bankdaten).
           </p>
           <p style={body}>
             Anthropic ist unter dem EU-U.S. Data Privacy Framework zertifiziert. Weitere Informationen: <span style={{ color: '#d4860a' }}>anthropic.com/privacy</span>
           </p>
-          <Placeholder label="Auftragsverarbeitungsvertrag (AVV)" value="[Bitte prüfen, ob ein AVV mit Anthropic abgeschlossen werden muss — empfohlen für produktiven Betrieb]" />
+          <div style={{
+            marginTop: 12, padding: '10px 14px',
+            background: 'rgba(212,134,10,0.07)', border: '1px solid rgba(212,134,10,0.20)',
+            borderRadius: 8,
+          }}>
+            <p style={{ ...note, marginTop: 0, color: '#a09a90', fontStyle: 'normal' }}>
+              <strong style={{ color: '#d4860a' }}>Hinweis AVV:</strong> Ob für den produktiven Betrieb ein Auftragsverarbeitungsvertrag (AVV) mit Anthropic erforderlich ist, ist noch zu prüfen und wird nachgereicht. Bitte kontaktieren Sie uns unter{' '}
+              <span style={{ color: '#d4860a' }}>friese.markus2@googlemail.com</span> bei Fragen dazu.
+            </p>
+          </div>
         </Section>
 
         <Section title="5. Chat-Eingaben und hochgeladene Dokumente">
@@ -97,7 +106,7 @@ export default function DatenschutzPage() {
             Texteingaben und hochgeladene Dokumente (PDF, Bilder) werden ausschließlich zur Beantwortung Ihrer Anfrage an die Anthropic-API übermittelt.
           </p>
           <p style={body}>
-            <strong style={{ color: '#f0ede8' }}>Keine serverseitige Speicherung:</strong> Wir speichern Ihre Chat-Verläufe und hochgeladenen Dokumente nicht dauerhaft. Inhalte existieren nur für die Dauer Ihrer Browser-Sitzung im Arbeitsspeicher Ihres Geräts.
+            <strong style={{ color: '#f0ede8' }}>Keine serverseitige Speicherung:</strong> Chat-Verläufe und hochgeladene Dokumente werden nicht dauerhaft gespeichert. Inhalte existieren nur für die Dauer Ihrer Browser-Sitzung im Arbeitsspeicher Ihres Geräts.
           </p>
           <p style={body}>
             Der Chat-Verlauf wird nach dem Schließen des Browsers oder durch die Funktion „Gespräch löschen" entfernt.
@@ -106,18 +115,18 @@ export default function DatenschutzPage() {
 
         <Section title="6. Lokaler Speicher (localStorage)">
           <p style={body}>
-            Die App nutzt den <strong style={{ color: '#f0ede8' }}>lokalen Browserspeicher (localStorage)</strong> für folgende Daten:
+            Die App nutzt den <strong style={{ color: '#f0ede8' }}>lokalen Browserspeicher (localStorage)</strong> ausschließlich für:
           </p>
           <ul style={{ ...body, paddingLeft: 20, marginTop: 8 }}>
             <li style={{ marginBottom: 6 }}>Bestätigung des Haftungshinweises</li>
             <li style={{ marginBottom: 6 }}>Optionaler persönlicher Kontext und eigene Anweisungen (nur wenn vom Nutzer eingetragen)</li>
           </ul>
           <p style={body}>
-            Diese Daten verlassen Ihren Browser nicht und werden nicht an unsere Server übertragen. Sie können diese Daten jederzeit im Browser unter Einstellungen → Websitedaten löschen.
+            Diese Daten verlassen Ihren Browser nicht. Sie können sie jederzeit im Browser unter Einstellungen → Websitedaten löschen.
           </p>
         </Section>
 
-        <Section title="7. Keine Cookies zu Tracking-Zwecken">
+        <Section title="7. Keine Tracking-Cookies">
           <p style={body}>
             Diese App setzt keine Tracking-Cookies, keine Analyse-Tools (z. B. Google Analytics) und keine Werbecookies ein.
           </p>
@@ -132,7 +141,7 @@ export default function DatenschutzPage() {
         <Section title="9. Ihre Rechte (Art. 15–22 DSGVO)">
           <p style={body}>Sie haben das Recht auf:</p>
           <ul style={{ ...body, paddingLeft: 20, marginTop: 8 }}>
-            <li style={{ marginBottom: 6 }}><strong style={{ color: '#f0ede8' }}>Auskunft</strong> (Art. 15) über die über Sie verarbeiteten Daten</li>
+            <li style={{ marginBottom: 6 }}><strong style={{ color: '#f0ede8' }}>Auskunft</strong> (Art. 15) über Ihre verarbeiteten Daten</li>
             <li style={{ marginBottom: 6 }}><strong style={{ color: '#f0ede8' }}>Berichtigung</strong> (Art. 16) unrichtiger Daten</li>
             <li style={{ marginBottom: 6 }}><strong style={{ color: '#f0ede8' }}>Löschung</strong> (Art. 17) Ihrer Daten</li>
             <li style={{ marginBottom: 6 }}><strong style={{ color: '#f0ede8' }}>Einschränkung</strong> (Art. 18) der Verarbeitung</li>
@@ -141,15 +150,15 @@ export default function DatenschutzPage() {
             <li style={{ marginBottom: 6 }}><strong style={{ color: '#f0ede8' }}>Beschwerde</strong> bei einer Aufsichtsbehörde (Art. 77)</li>
           </ul>
           <p style={{ ...body, marginTop: 12 }}>
-            Zur Ausübung Ihrer Rechte wenden Sie sich an: <span style={{ color: '#d4860a' }}>[IHRE@EMAIL.DE]</span>
+            Zur Ausübung Ihrer Rechte:{' '}
+            <span style={{ color: '#d4860a' }}>friese.markus2@googlemail.com</span>
           </p>
         </Section>
 
         <Section title="10. Zuständige Aufsichtsbehörde">
-          <Placeholder label="Bundesland" value="[IHR BUNDESLAND]" />
-          <p style={note}>
-            Die zuständige Datenschutzaufsichtsbehörde richtet sich nach Ihrem Wohnsitz-Bundesland. Eine Liste aller Behörden finden Sie unter: bfdi.bund.de
-          </p>
+          <Field label="Behörde" value="Hamburgischer Beauftragter für Datenschutz und Informationsfreiheit (HmbBfDI)" />
+          <Field label="Anschrift" value="Ludwig-Erhard-Str. 22, 7. OG, 20459 Hamburg" />
+          <Field label="Web" value="datenschutz.hamburg.de" />
         </Section>
 
         <div style={{ marginTop: 60, paddingTop: 32, borderTop: '1px solid #2a2a3f' }}>
@@ -185,13 +194,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Placeholder({ label, value }: { label: string; value: string }) {
+function Field({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <span style={{ fontSize: 12, color: '#6b6575', marginRight: 8 }}>{label}:</span>
-      <span style={{ fontSize: 14, color: value.startsWith('[') ? '#d4860a' : '#f0ede8', fontStyle: value.startsWith('[') ? 'italic' : 'normal' }}>
-        {value}
-      </span>
+      <span style={{ fontSize: 14, color: '#f0ede8' }}>{value}</span>
     </div>
   );
 }
