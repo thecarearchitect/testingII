@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Save, User, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+import { X, User, FileText, ChevronDown, ChevronUp, Trash2, AlertTriangle } from 'lucide-react';
+import { clearAllChats } from '@/lib/chatStorage';
 
 export interface UserSettings {
   personalContext: string;
@@ -11,19 +12,31 @@ export interface UserSettings {
 interface SettingsPanelProps {
   onClose: () => void;
   onSave: (settings: UserSettings) => void;
+  onChatsCleared?: () => void;
   initial: UserSettings;
 }
 
-export default function SettingsPanel({ onClose, onSave, initial }: SettingsPanelProps) {
+export default function SettingsPanel({ onClose, onSave, onChatsCleared, initial }: SettingsPanelProps) {
   const [personalContext, setPersonalContext] = useState(initial.personalContext);
   const [customInstructions, setCustomInstructions] = useState(initial.customInstructions);
   const [showExamples, setShowExamples] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [chatsCleared, setChatsCleared] = useState(false);
 
   const handleSave = () => {
     onSave({ personalContext, customInstructions });
     setSaved(true);
     setTimeout(() => { setSaved(false); onClose(); }, 800);
+  };
+
+  const handleClearAllChats = () => {
+    // TODO: Replace localStorage with Supabase when auth is implemented
+    clearAllChats();
+    setChatsCleared(true);
+    setConfirmClear(false);
+    onChatsCleared?.();
+    setTimeout(() => setChatsCleared(false), 3000);
   };
 
   const hasContent = personalContext.trim() || customInstructions.trim();
@@ -131,6 +144,52 @@ export default function SettingsPanel({ onClose, onSave, initial }: SettingsPane
               💾 Deine Angaben werden nur lokal in deinem Browser gespeichert (localStorage) –
               sie werden nicht übertragen oder gespeichert, außer wenn du die KI aktiv nutzt.
             </p>
+          </div>
+
+          {/* Alle Gespräche löschen */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
+            <div className="flex items-center gap-2 mb-2">
+              <Trash2 size={14} className="text-red-400/60" />
+              <span className="text-sm font-semibold text-white/60">Gespeicherte Gespräche</span>
+            </div>
+            <p className="text-xs text-white/30 leading-relaxed mb-3">
+              Alle Chat-Verläufe aus dem lokalen Browser-Speicher löschen.
+            </p>
+
+            {chatsCleared ? (
+              <p className="text-xs text-green-400/70">✓ Alle Gespräche wurden gelöscht.</p>
+            ) : confirmClear ? (
+              <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.20)', borderRadius: 10, padding: '12px 14px' }}>
+                <div className="flex items-start gap-2 mb-3">
+                  <AlertTriangle size={13} className="text-red-400/70 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-white/50 leading-relaxed">
+                    Möchtest du alle gespeicherten Gespräche löschen?
+                    Das kann nicht rückgängig gemacht werden.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setConfirmClear(false)}
+                    className="flex-1 py-2 rounded-lg text-xs text-white/40 border border-white/10 hover:bg-white/5 transition-all"
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    onClick={handleClearAllChats}
+                    className="flex-1 py-2 rounded-lg text-xs text-red-400 border border-red-500/30 hover:bg-red-500/10 transition-all"
+                  >
+                    Ja, alle löschen
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmClear(true)}
+                className="flex items-center gap-1.5 text-xs text-white/25 hover:text-red-400 transition-colors"
+              >
+                <Trash2 size={11} /> Alle Gespräche löschen
+              </button>
+            )}
           </div>
         </div>
 

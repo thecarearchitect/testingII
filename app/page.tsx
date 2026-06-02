@@ -28,6 +28,7 @@ export default function Home() {
   const [showSettings, setShowSettings]     = useState(false);
   const [userSettings, setUserSettings]     = useState<UserSettings>(DEFAULT_SETTINGS);
   const [chatKey, setChatKey]               = useState(0);
+  const [recentsKey, setRecentsKey]         = useState(0);
 
   useEffect(() => {
     if (localStorage.getItem('disclaimer-accepted') === 'true') setAccepted(true);
@@ -84,7 +85,12 @@ export default function Home() {
            style={{ background: 'radial-gradient(ellipse at 50% 0%, #150f1f 0%, #0a0a0f 50%)' }}>
 
         {showSettings && (
-          <SettingsPanel onClose={() => setShowSettings(false)} onSave={handleSaveSettings} initial={userSettings} />
+          <SettingsPanel
+            onClose={() => setShowSettings(false)}
+            onSave={handleSaveSettings}
+            onChatsCleared={() => setRecentsKey(k => k + 1)}
+            initial={userSettings}
+          />
         )}
 
         <header className="glass-dark flex-shrink-0 relative z-10">
@@ -132,7 +138,13 @@ export default function Home() {
         </div>
 
         <div className="flex-1 overflow-hidden relative z-10 max-w-3xl w-full mx-auto">
-          <ChatInterface key={`${activeMode}-${chatKey}`} modeId={activeMode} userSettings={userSettings} />
+          <ChatInterface
+            key={`${activeMode}-${chatKey}-${recentsKey}`}
+            modeId={activeMode}
+            userSettings={userSettings}
+            onOpenMode={openChat}
+            onChatSaved={() => setRecentsKey(k => k + 1)}
+          />
         </div>
 
         {showDisclaimer && <DisclaimerModal onAccept={handleAccept} />}

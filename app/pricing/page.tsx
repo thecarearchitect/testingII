@@ -101,13 +101,16 @@ export default function PricingPage() {
             }}>
               NUR 100 PLÄTZE
             </div>
-            <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#d4860a', marginBottom: 16 }}>Premium</p>
+            <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#d4860a', marginBottom: 16 }}>Founding Member</p>
             <div style={{ marginBottom: 4 }}>
               <span style={{ fontSize: 48, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1 }}>9,90 €</span>
               <span style={{ fontSize: 14, color: '#a09a90', marginLeft: 8 }}>/ Monat</span>
             </div>
             <p style={{ fontSize: 12, color: '#a09a90', marginBottom: 4 }}>Monatlich kündbar</p>
-            <p style={{ fontSize: 12, color: '#d4860a', fontStyle: 'italic', marginBottom: 28 }}>Beta-Phase: Kostenlos testen</p>
+            <p style={{ fontSize: 12, color: '#d4860a', fontStyle: 'italic', marginBottom: 8 }}>Beta-Phase: Kostenlos testen</p>
+            <p style={{ fontSize: 13, color: '#a09a90', fontStyle: 'italic', lineHeight: 1.65, marginBottom: 24 }}>
+              Die ersten 100 Founding Member erhalten Premium dauerhaft kostenlos — als Dankeschön für frühes Feedback und die Unterstützung beim Aufbau.
+            </p>
             <div style={{ flexGrow: 1, marginBottom: 32 }}>
               {PREMIUM_FEATURES.map(f => (
                 <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
@@ -126,7 +129,7 @@ export default function PricingPage() {
               onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.opacity = '1')}
             >
-              Premium testen →
+              Founding Member werden →
             </a>
           </div>
 

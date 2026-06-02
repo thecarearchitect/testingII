@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Trash2, Square, AlertCircle, Paperclip, X, FileText } from 'lucide-react';
+import { Send, Square, AlertCircle, Paperclip, X, FileText, RotateCcw, Clock } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import StarterQuestions from './StarterQuestions';
 import { MODES, ModeId } from '@/lib/modes';
 import { UserSettings } from './SettingsPanel';
 import SparkleIcon from './SparkleIcon';
+import {
+  saveChat, loadChat, clearChat,
+  getRecentChats, formatRelativeDate,
+  type StoredChat,
+} from '@/lib/chatStorage';
 
 export interface Attachment {
   name: string;
@@ -27,7 +32,7 @@ const ALLOWED_TYPES: Record<string, Attachment['mediaType']> = {
   'image/png':       'image/png',
 };
 
-const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
+const MAX_BYTES = 20 * 1024 * 1024;
 
 const DOCUMENT_ANALYSIS_PROMPT =
 `Bitte analysiere dieses Dokument strukturiert:
@@ -51,14 +56,17 @@ function formatBytes(n: number) {
 interface ChatInterfaceProps {
   modeId: ModeId;
   userSettings: UserSettings;
+  onChatSaved?: () => void;
+  onOpenMode?: (modeId: ModeId) => void;
 }
 
-export default function ChatInterface({ modeId, userSettings }: ChatInterfaceProps) {
+export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpenMode }: ChatInterfaceProps) {
   const [messages, setMessages]               = useState<Message[]>([]);
   const [input, setInput]                     = useState('');
   const [isLoading, setIsLoading]             = useState(false);
   const [error, setError]                     = useState<string | null>(null);
   const [pendingAttachment, setPendingAttachment] = useState<Attachment | null>(null);
+  const [recentChats, setRecentChats]         = useState<StoredChat[]>([]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,12 +74,20 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
 
   const activeMode = MODES.find((m) => m.id === modeId) ?? MODES[0];
 
+  const refreshRecents = useCallback(() => {
+    setRecentChats(getRecentChats().filter(c => c.modeId !== modeId));
+  }, [modeId]);
+
+  // Load previous chat on mount / mode change
+  // TODO: Replace localStorage with Supabase when auth is implemented
   useEffect(() => {
-    setMessages([]);
+    const stored = loadChat(modeId);
+    setMessages(stored ? stored.messages as Message[] : []);
     setInput('');
     setError(null);
     setPendingAttachment(null);
-  }, [modeId]);
+    refreshRecents();
+  }, [modeId, refreshRecents]);
 
   const adjustTextarea = () => {
     const ta = textareaRef.current;
@@ -118,6 +134,8 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
     setMessages([...newMessages, { role: 'assistant', content: '' }]);
     abortRef.current = new AbortController();
 
+    let accumulated = '';
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -135,13 +153,23 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let accumulated = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         accumulated += decoder.decode(value, { stream: true });
         setMessages([...newMessages, { role: 'assistant', content: accumulated }]);
       }
+
+      // Save completed conversation to localStorage
+      // TODO: Replace localStorage with Supabase when auth is implemented
+      const finalMessages = [...newMessages, { role: 'assistant', content: accumulated }];
+      saveChat(
+        modeId,
+        activeMode.title,
+        finalMessages.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+      );
+      onChatSaved?.();
+
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         setMessages((prev) => {
@@ -156,32 +184,82 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
       setIsLoading(false);
       abortRef.current = null;
     }
-  }, [messages, modeId, isLoading, userSettings, pendingAttachment]);
+  }, [messages, modeId, activeMode.title, isLoading, userSettings, pendingAttachment, onChatSaved]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
   };
 
-  const clearChat = () => {
+  // Clear in-memory state + localStorage for this mode
+  // TODO: Replace localStorage with Supabase when auth is implemented
+  const startNewChat = () => {
     abortRef.current?.abort();
+    clearChat(modeId);
     setMessages([]);
     setIsLoading(false);
     setError(null);
     setPendingAttachment(null);
+    refreshRecents();
+    onChatSaved?.();
   };
+
+  const showRecents = messages.length === 0 && recentChats.length > 0;
 
   return (
     <div className="flex flex-col h-full">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
         {messages.length === 0 ? (
-          <StarterQuestions
-            questions={activeMode.starterQuestions}
-            onSelect={sendMessage}
-            modeId={modeId}
-            modeTitle={activeMode.title}
-            modeSubtitle={activeMode.subtitle}
-          />
+          <>
+            {/* Letzte Gespräche (other modes) */}
+            {showRecents && (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+                  <Clock size={11} color="#4a4455" />
+                  <span style={{ fontSize: 11, color: '#4a4455', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                    Letzte Gespräche
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {recentChats.map(chat => (
+                    <button
+                      key={chat.modeId}
+                      onClick={() => onOpenMode?.(chat.modeId)}
+                      style={{
+                        background: '#16162a',
+                        border: '1px solid #2a2a3f',
+                        borderRadius: 10, padding: '10px 14px',
+                        cursor: 'pointer', textAlign: 'left', width: '100%',
+                        transition: 'border-color .15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4860a'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3f'; }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, color: '#d4860a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          {chat.modeTitle}
+                        </span>
+                        <span style={{ fontSize: 11, color: '#a09a90' }}>
+                          {formatRelativeDate(chat.lastAt)}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: 13, color: '#f0ede8', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {chat.preview || '—'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <StarterQuestions
+              questions={activeMode.starterQuestions}
+              onSelect={sendMessage}
+              modeId={modeId}
+              modeTitle={activeMode.title}
+              modeSubtitle={activeMode.subtitle}
+            />
+          </>
         ) : (
           <>
             {messages.map((msg, idx) => <MessageBubble key={idx} message={msg} />)}
@@ -229,9 +307,9 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
 
         {messages.length > 0 && (
           <div className="flex justify-end mb-2">
-            <button onClick={clearChat}
-              className="flex items-center gap-1.5 text-xs text-white/25 hover:text-red-400 transition-colors">
-              <Trash2 size={11} /> Gespräch löschen
+            <button onClick={startNewChat}
+              className="flex items-center gap-1.5 text-xs text-white/25 hover:text-amber-400 transition-colors">
+              <RotateCcw size={11} /> Neues Gespräch
             </button>
           </div>
         )}
@@ -260,11 +338,9 @@ export default function ChatInterface({ modeId, userSettings }: ChatInterfacePro
         )}
 
         <div className="flex gap-2 items-end">
-          {/* Hidden file input */}
           <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png"
             onChange={handleFileChange} style={{ display: 'none' }} />
 
-          {/* Paperclip button */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isLoading}
