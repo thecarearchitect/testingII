@@ -58,9 +58,10 @@ interface ChatInterfaceProps {
   userSettings: UserSettings;
   onChatSaved?: () => void;
   onOpenMode?: (modeId: ModeId) => void;
+  initialMessage?: string;
 }
 
-export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpenMode }: ChatInterfaceProps) {
+export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpenMode, initialMessage }: ChatInterfaceProps) {
   const [messages, setMessages]               = useState<Message[]>([]);
   const [input, setInput]                     = useState('');
   const [isLoading, setIsLoading]             = useState(false);
@@ -68,9 +69,11 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
   const [pendingAttachment, setPendingAttachment] = useState<Attachment | null>(null);
   const [recentChats, setRecentChats]         = useState<StoredChat[]>([]);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const abortRef    = useRef<AbortController | null>(null);
+  const textareaRef    = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef   = useRef<HTMLInputElement>(null);
+  const abortRef       = useRef<AbortController | null>(null);
+  // Keeps sendMessage up-to-date for the auto-send effect without stale closures
+  const sendMessageRef = useRef<(text: string) => void>(() => {});
 
   const activeMode = MODES.find((m) => m.id === modeId) ?? MODES[0];
 
@@ -78,16 +81,28 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     setRecentChats(getRecentChats().filter(c => c.modeId !== modeId));
   }, [modeId]);
 
-  // Load previous chat on mount / mode change
+  // Load previous chat on mount / mode change (skip when initialMessage is set)
   // TODO: Replace localStorage with Supabase when auth is implemented
   useEffect(() => {
-    const stored = loadChat(modeId);
-    setMessages(stored ? stored.messages as Message[] : []);
+    if (!initialMessage) {
+      const stored = loadChat(modeId);
+      setMessages(stored ? stored.messages as Message[] : []);
+    } else {
+      setMessages([]);
+    }
     setInput('');
     setError(null);
     setPendingAttachment(null);
     refreshRecents();
-  }, [modeId, refreshRecents]);
+  }, [modeId, refreshRecents]); // initialMessage excluded intentionally
+
+  // Auto-send initial message on first mount only
+  useEffect(() => {
+    if (!initialMessage) return;
+    const id = setTimeout(() => sendMessageRef.current(initialMessage), 80);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // empty deps = fires once on mount
 
   const adjustTextarea = () => {
     const ta = textareaRef.current;
@@ -185,6 +200,9 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
       abortRef.current = null;
     }
   }, [messages, modeId, activeMode.title, isLoading, userSettings, pendingAttachment, onChatSaved]);
+
+  // Keep ref current after every render so the auto-send effect never captures a stale sendMessage
+  useEffect(() => { sendMessageRef.current = sendMessage; });
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); }

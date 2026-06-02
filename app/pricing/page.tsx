@@ -1,9 +1,7 @@
+'use client';
+
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
-
-export const metadata = {
-  title: 'Preise – PflegeAssistent KI',
-};
 
 const PREMIUM_FEATURES = ['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen per E-Mail', 'Widerspruchshilfe', 'Fallhistorie'];
 
