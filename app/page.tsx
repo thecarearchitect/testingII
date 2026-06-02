@@ -472,6 +472,10 @@ export default function Home() {
               Aber er kennt die Fragen, die pflegende Angehörige<br />
               jeden Tag beantworten müssen.
             </p>
+            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.8, marginBottom: 24 }}>
+              Für pflegende Angehörige. Für Eltern. Für Fachkräfte.<br />
+              Für alle, die das System verstehen müssen.
+            </p>
             <button
               onClick={() => openChat('allgemein')}
               style={{
