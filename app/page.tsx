@@ -438,7 +438,7 @@ export default function Home() {
               fontSize: 15, fontStyle: 'italic',
               color: '#f0ede8', lineHeight: 1.8, marginBottom: 20,
             }}>
-              „Meine Tochter hat Down-Syndrom. Pflegegrad 3. Die Krankenkasse lehnt den Integrationshelfer für die Schule ab."
+              „Meine Tochter hat das Down-Syndrom. Pflegegrad 3. Die Krankenkasse lehnt den Integrationshelfer für die Schule ab."
             </p>
             <p style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, marginBottom: 6 }}>
               Eine allgemeine KI liefert Informationen.
