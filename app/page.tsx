@@ -295,7 +295,7 @@ export default function Home() {
       </section>
 
       {/* ── SEKTION 2: PROBLEM ──────────────────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px 60px' }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <p className="reveal-scroll" style={{
             fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
@@ -338,7 +338,7 @@ export default function Home() {
       </section>
 
       {/* ── SEKTION 2b: WARUM NICHT CHATGPT ────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+      <section style={{ background: '#0a0a0f', padding: '60px 24px clamp(100px, 13vw, 150px)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
 
           <p className="reveal-scroll" style={{
