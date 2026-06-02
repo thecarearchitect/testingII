@@ -282,14 +282,13 @@ export default function Home() {
       {/* ── SEKTION 1b: FÜR WEN ─────────────────── */}
       <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px 60px' }}>
         <div className="reveal-scroll" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 18, color: '#f0ede8', lineHeight: 2, marginBottom: 28 }}>
-            Für pflegende Angehörige.<br />
-            Für Eltern von Kindern mit Behinderung.<br />
-            Für Kinder, die plötzlich ihre Eltern begleiten müssen.<br />
-            Für alle, die lernen müssen, wie Pflege funktioniert.
+          <p style={{ fontSize: 18, color: '#f0ede8', lineHeight: 1.9, marginBottom: 28 }}>
+            Für alle, die mit dem Pflegesystem konfrontiert sind.
+            Als Angehöriger, als Elternteil, als Fachkraft oder
+            einfach weil das Leben es so will.
           </p>
           <p style={{ fontSize: 16, color: '#a09a90', lineHeight: 1.9 }}>
-            Bescheide verstehen. Fristen erkennen. Ansprüche durchsetzen.<br />
+            Bescheide verstehen. Anträge stellen. Fristen erkennen. Ansprüche durchsetzen.<br />
             Ohne Sozialrecht studiert zu haben.
           </p>
         </div>
