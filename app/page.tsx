@@ -492,6 +492,277 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── SEKTION: FRISTEN-ASSISTENT ──────────── */}
+      <section style={{ background: '#111118', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#a09a90',
+            textAlign: 'center', marginBottom: 24,
+          }}>
+            Fristen-Assistent
+          </p>
+
+          <h2 className="font-fraunces reveal-scroll" style={{
+            fontSize: 'clamp(28px, 4.5vw, 44px)',
+            fontWeight: 300, color: '#f0ede8',
+            textAlign: 'center', lineHeight: 1.2,
+            marginBottom: 20, letterSpacing: '-0.02em',
+          }}>
+            Nie wieder eine wichtige Frist verpassen.
+          </h2>
+
+          <p className="reveal-scroll" style={{
+            fontSize: 18, color: '#a09a90', lineHeight: 1.75,
+            textAlign: 'center', maxWidth: 580, margin: '0 auto 72px',
+          }}>
+            Pflegebescheide, Verordnungen und Ausweise enthalten Fristen.
+            PflegeAssistent erkennt sie automatisch und erinnert dich rechtzeitig.
+          </p>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: 20,
+          }}>
+            {/* Karte 1 */}
+            <div className="reveal-scroll" style={{
+              padding: '32px 28px', background: '#16162a',
+              borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#d4860a', marginBottom: 16, fontFamily: 'Fraunces, Georgia, serif' }}>01</p>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: '#f0ede8', marginBottom: 20 }}>Dokument hochladen</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {['Pflegegradbescheid', 'Hilfsmittelablehnung', 'Behindertenparkausweis', 'Schwerbehindertenausweis', 'Verordnung'].map(item => (
+                  <li key={item} style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, paddingBottom: 6 }}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Karte 2 */}
+            <div className="reveal-scroll" style={{
+              transitionDelay: '0.1s',
+              padding: '32px 28px', background: '#16162a',
+              borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#d4860a', marginBottom: 16, fontFamily: 'Fraunces, Georgia, serif' }}>02</p>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: '#f0ede8', marginBottom: 16 }}>Frist erkennen</h3>
+              <p style={{ fontSize: 13, color: '#6b6575', lineHeight: 1.7, marginBottom: 14 }}>PflegeAssistent erkennt automatisch:</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {['Widerspruchsfristen', 'Ablaufdaten', 'Verlängerungen', 'Wiedervorlagen'].map(item => (
+                  <li key={item} style={{ fontSize: 14, color: '#a09a90', lineHeight: 1.7, paddingBottom: 6, display: 'flex', gap: 8 }}>
+                    <span style={{ color: '#d4860a', flexShrink: 0 }}>✓</span>{item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Karte 3 */}
+            <div className="reveal-scroll" style={{
+              transitionDelay: '0.2s',
+              padding: '32px 28px', background: '#16162a',
+              borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#d4860a', marginBottom: 16, fontFamily: 'Fraunces, Georgia, serif' }}>03</p>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: '#f0ede8', marginBottom: 20 }}>Erinnert werden</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {[
+                  'Dein Parkausweis läuft in 30 Tagen ab.',
+                  'Die Widerspruchsfrist endet in 12 Tagen.',
+                  'Neue Verordnung erforderlich.',
+                ].map(msg => (
+                  <p key={msg} style={{
+                    fontSize: 13, fontStyle: 'italic', color: '#f0ede8', lineHeight: 1.65,
+                    padding: '12px 14px',
+                    background: 'rgba(212,134,10,0.06)', border: '1px solid rgba(212,134,10,0.15)',
+                    borderRadius: 8,
+                  }}>
+                    „{msg}"
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SEKTION: PREMIUM & PRICING ──────────── */}
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+
+          <p className="reveal-scroll" style={{
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '3.5px', color: '#d4860a',
+            textAlign: 'center', marginBottom: 24,
+          }}>
+            Premium
+          </p>
+
+          <h2 className="font-fraunces reveal-scroll" style={{
+            fontSize: 'clamp(28px, 4.5vw, 44px)',
+            fontWeight: 300, color: '#f0ede8',
+            textAlign: 'center', lineHeight: 1.2,
+            marginBottom: 20, letterSpacing: '-0.02em',
+          }}>
+            Dein digitales Pflegegedächtnis.
+          </h2>
+
+          <p className="reveal-scroll" style={{
+            fontSize: 17, color: '#a09a90', lineHeight: 1.8,
+            textAlign: 'center', maxWidth: 520, margin: '0 auto 52px',
+          }}>
+            Dokumente verschwinden. Fristen werden vergessen.
+            PflegeAssistent speichert wichtige Termine, Fristen und
+            Dokumente an einem Ort.
+          </p>
+
+          {/* Premium-Features 2-col */}
+          <div className="reveal-scroll" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 10,
+            maxWidth: 620, margin: '0 auto 72px',
+          }}>
+            {[
+              'Dokumentenarchiv', 'Automatische Fristenerkennung',
+              'Erinnerungen per E-Mail', 'Fallhistorie',
+              'Alle Bescheide an einem Ort', 'Mehrere Angehörige verwalten',
+            ].map(f => (
+              <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ color: '#d4860a', flexShrink: 0, marginTop: 2 }}>✓</span>
+                <span style={{ fontSize: 14, color: '#c8c0a0', lineHeight: 1.65 }}>{f}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Pricing-Karten */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: 20, alignItems: 'stretch',
+          }}>
+
+            {/* Kostenlos */}
+            <div className="reveal-scroll" style={{
+              padding: '36px 28px', background: '#16162a',
+              border: '1px solid #2a2a3f', borderRadius: 20,
+              display: 'flex', flexDirection: 'column',
+            }}>
+              <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#a09a90', marginBottom: 16 }}>Kostenlos</p>
+              <p style={{ fontSize: 44, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1, marginBottom: 32 }}>0 €</p>
+              <div style={{ flexGrow: 1, marginBottom: 28 }}>
+                {['Pflegefragen stellen', 'Pflegewissen nutzen', 'Erste Orientierung'].map(f => (
+                  <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+                    <span style={{ color: '#d4860a' }}>✓</span>
+                    <span style={{ fontSize: 14, color: '#a09a90' }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => openChat('allgemein')}
+                style={{
+                  background: 'transparent', color: '#d4860a',
+                  border: '1px solid rgba(212,134,10,0.45)',
+                  borderRadius: 9999, padding: '12px 24px',
+                  fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
+                  transition: 'border-color .15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4860a'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,134,10,0.45)'; }}
+              >
+                Kostenlos starten →
+              </button>
+            </div>
+
+            {/* Premium */}
+            <div className="reveal-scroll" style={{
+              transitionDelay: '0.1s',
+              padding: '36px 28px', background: '#1e1a2e',
+              border: '2px solid #d4860a', borderRadius: 20,
+              display: 'flex', flexDirection: 'column', position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
+                background: '#d4860a', color: '#0a0a0f',
+                fontSize: 10, fontWeight: 700, letterSpacing: '2px',
+                padding: '4px 14px', borderRadius: 9999, whiteSpace: 'nowrap',
+              }}>BELIEBT</div>
+              <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#d4860a', marginBottom: 16 }}>Premium</p>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontSize: 44, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1 }}>9,90 €</span>
+                <span style={{ fontSize: 14, color: '#a09a90', marginLeft: 8 }}>/ Monat</span>
+              </div>
+              <p style={{ fontSize: 12, color: '#a09a90', marginBottom: 4 }}>Monatlich kündbar</p>
+              <p style={{ fontSize: 12, color: '#d4860a', fontStyle: 'italic', marginBottom: 24 }}>Beta-Phase: Kostenlos testen</p>
+              <div style={{ flexGrow: 1, marginBottom: 28 }}>
+                {['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen per E-Mail', 'Widerspruchshilfe', 'Fallhistorie'].map(f => (
+                  <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+                    <span style={{ color: '#d4860a' }}>✓</span>
+                    <span style={{ fontSize: 14, color: '#c8c0a0' }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <a href="/waitlist" style={{
+                background: '#d4860a', color: '#fff',
+                borderRadius: 9999, padding: '12px 24px',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                textAlign: 'center', textDecoration: 'none', display: 'block',
+                transition: 'opacity .15s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                Premium testen →
+              </a>
+            </div>
+
+            {/* Jahresabo */}
+            <div className="reveal-scroll" style={{
+              transitionDelay: '0.2s',
+              padding: '36px 28px', background: '#16162a',
+              border: '1px solid #2a2a3f', borderRadius: 20,
+              display: 'flex', flexDirection: 'column', position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
+                background: '#2a6b3f', color: '#e8f5ee',
+                fontSize: 10, fontWeight: 700, letterSpacing: '2px',
+                padding: '4px 14px', borderRadius: 9999, whiteSpace: 'nowrap',
+              }}>25 % GÜNSTIGER</div>
+              <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#a09a90', marginBottom: 16 }}>Jahresabo</p>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontSize: 44, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1 }}>7,50 €</span>
+                <span style={{ fontSize: 14, color: '#a09a90', marginLeft: 8 }}>/ Monat</span>
+              </div>
+              <p style={{ fontSize: 12, color: '#a09a90', marginBottom: 32 }}>90 € pro Jahr</p>
+              <div style={{ flexGrow: 1, marginBottom: 28 }}>
+                {['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen per E-Mail', 'Widerspruchshilfe', 'Fallhistorie'].map(f => (
+                  <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+                    <span style={{ color: '#d4860a' }}>✓</span>
+                    <span style={{ fontSize: 14, color: '#a09a90' }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <a href="/waitlist" style={{
+                background: 'transparent', color: '#d4860a',
+                border: '1px solid rgba(212,134,10,0.45)',
+                borderRadius: 9999, padding: '12px 24px',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                textAlign: 'center', textDecoration: 'none', display: 'block',
+                transition: 'border-color .15s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4860a'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,134,10,0.45)'; }}
+              >
+                Jahresabo wählen →
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ── SEKTION 3: VERTRAUEN ────────────────── */}
       <section style={{ background: '#111118', padding: 'clamp(100px, 13vw, 150px) 24px' }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
