@@ -280,7 +280,7 @@ export default function Home() {
       </section>
 
       {/* ── SEKTION 1b: FÜR WEN ─────────────────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(80px, 10vw, 120px) 24px 60px' }}>
+      <section style={{ background: 'linear-gradient(to bottom, #0a0a0f, #0d0d14 18%, #0d0d14 82%, #0a0a0f)', padding: 'clamp(80px, 10vw, 120px) 24px 60px' }}>
         <div className="reveal-scroll" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
           <p style={{ fontSize: 18, color: '#f0ede8', lineHeight: 1.9, marginBottom: 28 }}>
             Für alle, die mit dem Pflegesystem konfrontiert sind.
@@ -295,7 +295,7 @@ export default function Home() {
       </section>
 
       {/* ── SEKTION 2: PROBLEM ──────────────────── */}
-      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px 60px' }}>
+      <section style={{ background: '#0a0a0f', padding: 'clamp(100px, 13vw, 150px) 24px 120px' }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <p className="reveal-scroll" style={{
             fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
@@ -338,7 +338,7 @@ export default function Home() {
       </section>
 
       {/* ── SEKTION 2b: WARUM NICHT CHATGPT ────── */}
-      <section style={{ background: '#0a0a0f', padding: '60px 24px clamp(100px, 13vw, 150px)' }}>
+      <section style={{ background: 'linear-gradient(to bottom, #0a0a0f, #0d0d14 12%, #0d0d14 88%, #0a0a0f)', padding: '120px 24px clamp(100px, 13vw, 150px)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
 
           <p className="reveal-scroll" style={{
@@ -635,129 +635,15 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Pricing-Karten */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 20, alignItems: 'stretch',
-          }}>
-
-            {/* Kostenlos */}
-            <div className="reveal-scroll" style={{
-              padding: '36px 28px', background: '#16162a',
-              border: '1px solid #2a2a3f', borderRadius: 20,
-              display: 'flex', flexDirection: 'column',
-            }}>
-              <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#a09a90', marginBottom: 16 }}>Kostenlos</p>
-              <p style={{ fontSize: 44, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1, marginBottom: 32 }}>0 €</p>
-              <div style={{ flexGrow: 1, marginBottom: 28 }}>
-                {['Pflegefragen stellen', 'Pflegewissen nutzen', 'Erste Orientierung'].map(f => (
-                  <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
-                    <span style={{ color: '#d4860a' }}>✓</span>
-                    <span style={{ fontSize: 14, color: '#a09a90' }}>{f}</span>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => openChat('allgemein')}
-                style={{
-                  background: 'transparent', color: '#d4860a',
-                  border: '1px solid rgba(212,134,10,0.45)',
-                  borderRadius: 9999, padding: '12px 24px',
-                  fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
-                  transition: 'border-color .15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4860a'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,134,10,0.45)'; }}
-              >
-                Kostenlos starten →
-              </button>
-            </div>
-
-            {/* Premium */}
-            <div className="reveal-scroll" style={{
-              transitionDelay: '0.1s',
-              padding: '36px 28px', background: '#1e1a2e',
-              border: '2px solid #d4860a', borderRadius: 20,
-              display: 'flex', flexDirection: 'column', position: 'relative',
-            }}>
-              <div style={{
-                position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
-                background: '#d4860a', color: '#0a0a0f',
-                fontSize: 10, fontWeight: 700, letterSpacing: '2px',
-                padding: '4px 14px', borderRadius: 9999, whiteSpace: 'nowrap',
-              }}>BELIEBT</div>
-              <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#d4860a', marginBottom: 16 }}>Premium</p>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 44, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1 }}>9,90 €</span>
-                <span style={{ fontSize: 14, color: '#a09a90', marginLeft: 8 }}>/ Monat</span>
-              </div>
-              <p style={{ fontSize: 12, color: '#a09a90', marginBottom: 4 }}>Monatlich kündbar</p>
-              <p style={{ fontSize: 12, color: '#d4860a', fontStyle: 'italic', marginBottom: 24 }}>Beta-Phase: Kostenlos testen</p>
-              <div style={{ flexGrow: 1, marginBottom: 28 }}>
-                {['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen per E-Mail', 'Widerspruchshilfe', 'Fallhistorie'].map(f => (
-                  <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
-                    <span style={{ color: '#d4860a' }}>✓</span>
-                    <span style={{ fontSize: 14, color: '#c8c0a0' }}>{f}</span>
-                  </div>
-                ))}
-              </div>
-              <a href="/waitlist" style={{
-                background: '#d4860a', color: '#fff',
-                borderRadius: 9999, padding: '12px 24px',
-                fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                textAlign: 'center', textDecoration: 'none', display: 'block',
-                transition: 'opacity .15s',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-              >
-                Premium testen →
-              </a>
-            </div>
-
-            {/* Jahresabo */}
-            <div className="reveal-scroll" style={{
-              transitionDelay: '0.2s',
-              padding: '36px 28px', background: '#16162a',
-              border: '1px solid #2a2a3f', borderRadius: 20,
-              display: 'flex', flexDirection: 'column', position: 'relative',
-            }}>
-              <div style={{
-                position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
-                background: '#2a6b3f', color: '#e8f5ee',
-                fontSize: 10, fontWeight: 700, letterSpacing: '2px',
-                padding: '4px 14px', borderRadius: 9999, whiteSpace: 'nowrap',
-              }}>25 % GÜNSTIGER</div>
-              <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#a09a90', marginBottom: 16 }}>Jahresabo</p>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 44, fontWeight: 700, color: '#f0ede8', fontFamily: 'Fraunces, Georgia, serif', lineHeight: 1 }}>7,50 €</span>
-                <span style={{ fontSize: 14, color: '#a09a90', marginLeft: 8 }}>/ Monat</span>
-              </div>
-              <p style={{ fontSize: 12, color: '#a09a90', marginBottom: 32 }}>90 € pro Jahr</p>
-              <div style={{ flexGrow: 1, marginBottom: 28 }}>
-                {['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen per E-Mail', 'Widerspruchshilfe', 'Fallhistorie'].map(f => (
-                  <div key={f} style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
-                    <span style={{ color: '#d4860a' }}>✓</span>
-                    <span style={{ fontSize: 14, color: '#a09a90' }}>{f}</span>
-                  </div>
-                ))}
-              </div>
-              <a href="/waitlist" style={{
-                background: 'transparent', color: '#d4860a',
-                border: '1px solid rgba(212,134,10,0.45)',
-                borderRadius: 9999, padding: '12px 24px',
-                fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                textAlign: 'center', textDecoration: 'none', display: 'block',
-                transition: 'border-color .15s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4860a'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,134,10,0.45)'; }}
-              >
-                Jahresabo wählen →
-              </a>
-            </div>
-
+          <div className="reveal-scroll" style={{ textAlign: 'center', marginTop: 8 }}>
+            <a
+              href="/pricing"
+              style={{ fontSize: 14, color: '#a09a90', textDecoration: 'none', transition: 'color .15s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#f0ede8')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#a09a90')}
+            >
+              Alle Pläne ansehen →
+            </a>
           </div>
         </div>
       </section>
