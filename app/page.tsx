@@ -467,14 +467,10 @@ export default function Home() {
 
           {/* Abschluss + CTA */}
           <div className="reveal-scroll" style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.85, marginBottom: 36 }}>
+            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.85, marginBottom: 24 }}>
               PflegeAssistent kennt nicht alles.<br />
-              Aber er kennt die Fragen, die pflegende Angehörige<br />
-              jeden Tag beantworten müssen.
-            </p>
-            <p style={{ fontSize: 15, color: '#a09a90', lineHeight: 1.8, marginBottom: 24 }}>
-              Für pflegende Angehörige. Für Eltern. Für Fachkräfte.<br />
-              Für alle, die das System verstehen müssen.
+              Aber er kennt die Fragen, die pflegende Angehörige,<br />
+              Eltern und Fachkräfte jeden Tag beantworten müssen.
             </p>
             <button
               onClick={() => openChat('allgemein')}
