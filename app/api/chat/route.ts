@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { MODES, ModeId } from '@/lib/modes';
 import { checkRateLimit } from '@/lib/rateLimiter';
+import { betraegeFuerPrompt } from '@/lib/pflegeBetraege';
 import { NextRequest } from 'next/server';
 
 function getClientIp(req: NextRequest): string {
@@ -100,6 +101,9 @@ export async function POST(req: NextRequest) {
       : '';
 
     const systemPrompt = `${mode.systemPrompt}${personalBlock}${instructionsBlock}
+
+---
+${betraegeFuerPrompt()}
 
 ---
 Formatierungshinweise:
