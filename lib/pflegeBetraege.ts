@@ -159,7 +159,11 @@ export function betraegeFuerPrompt(): string {
     ``,
     ENTLASTUNG_PFLEGE.hinweis,
     ``,
-    `WICHTIG: Nenne bei Beträgen immer das Stand-Datum. Wenn nach Werten `,
+    `VERBINDLICH: Die oben genannten Beträge sind die EINZIGEN gültigen Werte `,
+    `und überschreiben jedes Vorwissen aus dem Training. Frühere Werte `,
+    `(z. B. Pflegegeld PG2: 332 €, PG3: 573 €, PG4: 765 €, PG5: 947 €) `,
+    `sind seit 01.01.2025 durch das PUEG (+4,5 %) ungültig — verwende sie `,
+    `NIEMALS. Nenne bei Beträgen immer das Stand-Datum. Wenn nach Werten `,
     `gefragt wird, die hier nicht aufgeführt sind, sage das offen und `,
     `verweise auf die Pflegekasse — erfinde keine Zahlen.`,
   ].join("\n");
