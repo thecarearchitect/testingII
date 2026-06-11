@@ -156,6 +156,7 @@ export default function Home() {
             onOpenMode={openChat}
             onChatSaved={() => setRecentsKey(k => k + 1)}
             initialMessage={pendingMessage ?? undefined}
+            onInitialMessageConsumed={() => setPendingMessage(null)}
           />
         </div>
 

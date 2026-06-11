@@ -59,9 +59,10 @@ interface ChatInterfaceProps {
   onChatSaved?: () => void;
   onOpenMode?: (modeId: ModeId) => void;
   initialMessage?: string;
+  onInitialMessageConsumed?: () => void;
 }
 
-export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpenMode, initialMessage }: ChatInterfaceProps) {
+export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpenMode, initialMessage, onInitialMessageConsumed }: ChatInterfaceProps) {
   const [messages, setMessages]               = useState<Message[]>([]);
   const [input, setInput]                     = useState('');
   const [isLoading, setIsLoading]             = useState(false);
@@ -69,11 +70,11 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
   const [pendingAttachment, setPendingAttachment] = useState<Attachment | null>(null);
   const [recentChats, setRecentChats]         = useState<StoredChat[]>([]);
 
-  const textareaRef    = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef   = useRef<HTMLInputElement>(null);
-  const abortRef       = useRef<AbortController | null>(null);
-  // Keeps sendMessage up-to-date for the auto-send effect without stale closures
-  const sendMessageRef = useRef<(text: string) => void>(() => {});
+  const textareaRef      = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef     = useRef<HTMLInputElement>(null);
+  const abortRef         = useRef<AbortController | null>(null);
+  const sendMessageRef   = useRef<(text: string) => void>(() => {});
+  const hasAutoSentRef   = useRef(false);
 
   const activeMode = MODES.find((m) => m.id === modeId) ?? MODES[0];
 
@@ -81,28 +82,29 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     setRecentChats(getRecentChats().filter(c => c.modeId !== modeId));
   }, [modeId]);
 
-  // Load previous chat on mount / mode change (skip when initialMessage is set)
+  // FIX 3: abort in-flight stream on mode change, then load stored chat
   // TODO: Replace localStorage with Supabase when auth is implemented
   useEffect(() => {
-    if (!initialMessage) {
-      const stored = loadChat(modeId);
-      setMessages(stored ? stored.messages as Message[] : []);
-    } else {
-      setMessages([]);
-    }
+    abortRef.current?.abort();
+    const stored = loadChat(modeId);
+    setMessages(stored ? stored.messages as Message[] : []);
     setInput('');
     setError(null);
     setPendingAttachment(null);
     refreshRecents();
-  }, [modeId, refreshRecents]); // initialMessage excluded intentionally
+  }, [modeId, refreshRecents]);
 
-  // Auto-send initial message on first mount only
+  // FIX 2: auto-send once per mount; setTimeout(0) lets React flush stored-chat
+  // state before sendMessageRef is called. hasAutoSentRef guards against
+  // StrictMode double-fire (cleanup cancels the timer on the first invocation).
   useEffect(() => {
-    if (!initialMessage) return;
-    const id = setTimeout(() => sendMessageRef.current(initialMessage), 80);
+    if (!initialMessage || hasAutoSentRef.current) return;
+    hasAutoSentRef.current = true;
+    onInitialMessageConsumed?.();
+    const id = setTimeout(() => sendMessageRef.current(initialMessage), 0);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // empty deps = fires once on mount
+  }, []); // empty deps: fires once on mount
 
   const adjustTextarea = () => {
     const ta = textareaRef.current;
