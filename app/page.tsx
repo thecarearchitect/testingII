@@ -13,11 +13,12 @@ import ModeIcon from '@/components/ModeIcon';
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
 const CARD_STYLES: Record<ModeId, { prominent?: boolean }> = {
-  allgemein:    { prominent: true  },
-  formular:     {},
-  widerspruch:  { prominent: true  },
-  pflegealltag: {},
-  rechtlich:    {},
+  allgemein:          { prominent: true  },
+  formular:           {},
+  widerspruch:        { prominent: true  },
+  pflegealltag:       {},
+  rechtlich:          {},
+  'kind-behinderung': { prominent: true  },
 };
 
 export default function Home() {
@@ -29,6 +30,8 @@ export default function Home() {
   const [userSettings, setUserSettings]     = useState<UserSettings>(DEFAULT_SETTINGS);
   const [chatKey, setChatKey]               = useState(0);
   const [recentsKey, setRecentsKey]         = useState(0);
+  const [demoInput, setDemoInput]           = useState('');
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (localStorage.getItem('disclaimer-accepted') === 'true') setAccepted(true);
@@ -63,7 +66,16 @@ export default function Home() {
 
   const openChat = (modeId: ModeId) => {
     if (!accepted) { setShowDisclaimer(true); return; }
+    setPendingMessage(null);
     setActiveMode(modeId);
+    setChatKey((k) => k + 1);
+    setView('chat');
+  };
+
+  const openChatWithMessage = (message: string) => {
+    if (!accepted) { setShowDisclaimer(true); return; }
+    setPendingMessage(message);
+    setActiveMode('allgemein');
     setChatKey((k) => k + 1);
     setView('chat');
   };
@@ -144,6 +156,8 @@ export default function Home() {
             userSettings={userSettings}
             onOpenMode={openChat}
             onChatSaved={() => setRecentsKey(k => k + 1)}
+            initialMessage={pendingMessage ?? undefined}
+            onInitialMessageConsumed={() => setPendingMessage(null)}
           />
         </div>
 
@@ -287,6 +301,76 @@ export default function Home() {
             >
               Pflegegrad prüfen lassen
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── LIVE DEMO BLOCK ─────────────────────── */}
+      <section style={{ background: '#0a0a0f', padding: '0 24px 80px' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 22, fontWeight: 400, color: '#f0ede8', marginBottom: 20, letterSpacing: '-0.01em' }}>
+            Stell eine echte Frage.
+          </h2>
+
+          {/* Beispiel-Chip */}
+          <button
+            onClick={() => setDemoInput('Meine Mutter hat Pflegegrad 2. Kann ich Widerspruch einlegen?')}
+            style={{
+              background: '#16162a', border: '1px solid #d4860a',
+              borderRadius: 9999, padding: '8px 18px',
+              fontSize: 13, color: '#d4860a', cursor: 'pointer',
+              marginBottom: 20, display: 'inline-block',
+              transition: 'background .15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,134,10,0.10)')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#16162a')}
+          >
+            „Meine Mutter hat Pflegegrad 2. Kann ich Widerspruch einlegen?"
+          </button>
+
+          {/* Eingabefeld */}
+          <input
+            type="text"
+            value={demoInput}
+            onChange={e => setDemoInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && demoInput.trim()) openChatWithMessage(demoInput.trim()); }}
+            placeholder="Frage eingeben..."
+            style={{
+              width: '100%', padding: '16px 20px',
+              background: '#16162a', border: '1px solid #2a2a3f',
+              borderRadius: 12, fontSize: 15, color: '#f0ede8',
+              outline: 'none', marginBottom: 12,
+              boxSizing: 'border-box',
+              transition: 'border-color .15s',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#d4860a')}
+            onBlur={e => (e.currentTarget.style.borderColor = '#2a2a3f')}
+          />
+
+          {/* Absenden */}
+          <button
+            onClick={() => { if (demoInput.trim()) openChatWithMessage(demoInput.trim()); }}
+            style={{
+              background: '#d4860a', color: '#fff', border: 'none',
+              borderRadius: 9999, padding: '14px 36px',
+              fontSize: 15, fontWeight: 600,
+              cursor: demoInput.trim() ? 'pointer' : 'default',
+              opacity: demoInput.trim() ? 1 : 0.45,
+              marginBottom: 20,
+              transition: 'opacity .15s',
+              boxShadow: demoInput.trim() ? '0 6px 24px rgba(212,134,10,0.30)' : 'none',
+            }}
+            onMouseEnter={e => { if (demoInput.trim()) e.currentTarget.style.opacity = '0.85'; }}
+            onMouseLeave={e => (e.currentTarget.style.opacity = demoInput.trim() ? '1' : '0.45')}
+          >
+            Beispiel ausprobieren →
+          </button>
+
+          {/* Bullet points */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 28, flexWrap: 'wrap' }}>
+            {['Kostenlos', 'Kein Konto nötig', 'Sofortige Antwort'].map(txt => (
+              <span key={txt} style={{ fontSize: 12, color: '#4a4455' }}>{txt}</span>
+            ))}
           </div>
         </div>
       </section>

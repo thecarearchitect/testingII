@@ -25,6 +25,14 @@ function storageKey(modeId: ModeId): string {
 export function saveChat(modeId: ModeId, modeTitle: string, messages: StoredMessage[]): void {
   // TODO: Replace localStorage with Supabase when auth is implemented
   if (messages.length === 0) return;
+  // Never shrink a stored conversation — a save from a stale closure or an
+  // orphaned stream must not overwrite a longer history. Explicit deletion
+  // goes through clearChat/clearAllChats only.
+  const existing = loadChat(modeId);
+  if (existing && existing.messages.length > messages.length) {
+    console.warn('[chatStorage] Save skipped – would shrink stored chat for', modeId);
+    return;
+  }
   const firstUser = messages.find(m => m.role === 'user');
   const preview = firstUser
     ? firstUser.content.slice(0, 60) + (firstUser.content.length > 60 ? '…' : '')

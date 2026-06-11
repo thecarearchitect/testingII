@@ -3,6 +3,7 @@ import { Heart } from 'lucide-react';
 
 export const metadata = {
   title: 'Preise – PflegeAssistent KI',
+  description: 'Kostenlos starten, auf Premium upgraden. Founding Member erhalten dauerhaft kostenlosen Zugang.',
 };
 
 const PREMIUM_FEATURES = ['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen per E-Mail', 'Widerspruchshilfe', 'Fallhistorie'];
@@ -10,6 +11,10 @@ const PREMIUM_FEATURES = ['Dokumentenarchiv', 'Fristen-Assistent', 'Erinnerungen
 export default function PricingPage() {
   return (
     <div style={{ background: '#0a0a0f', minHeight: '100vh' }}>
+      <style>{`
+        .p-btn-outline:hover { border-color: #d4860a !important; }
+        .p-btn-solid:hover   { opacity: 0.85 !important; }
+      `}</style>
 
       {/* Nav */}
       <nav style={{
@@ -72,17 +77,14 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <Link href="/" style={{
+            <Link href="/" className="p-btn-outline" style={{
               background: 'transparent', color: '#d4860a',
               border: '1px solid rgba(212,134,10,0.45)',
               borderRadius: 9999, padding: '13px 24px',
               fontSize: 14, fontWeight: 600,
               textAlign: 'center', textDecoration: 'none', display: 'block',
               transition: 'border-color .15s',
-            }}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.borderColor = '#d4860a'; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.borderColor = 'rgba(212,134,10,0.45)'; }}
-            >
+            }}>
               Kostenlos starten →
             </Link>
           </div>
@@ -119,16 +121,13 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <a href="/waitlist" style={{
+            <a href="/waitlist" className="p-btn-solid" style={{
               background: '#d4860a', color: '#fff',
               borderRadius: 9999, padding: '13px 24px',
               fontSize: 14, fontWeight: 600,
               textAlign: 'center', textDecoration: 'none', display: 'block',
               transition: 'opacity .15s',
-            }}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.opacity = '0.85')}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.opacity = '1')}
-            >
+            }}>
               Founding Member werden →
             </a>
           </div>
@@ -161,17 +160,14 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <a href="/waitlist" style={{
+            <a href="/waitlist" className="p-btn-outline" style={{
               background: 'transparent', color: '#d4860a',
               border: '1px solid rgba(212,134,10,0.45)',
               borderRadius: 9999, padding: '13px 24px',
               fontSize: 14, fontWeight: 600,
               textAlign: 'center', textDecoration: 'none', display: 'block',
               transition: 'border-color .15s',
-            }}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.borderColor = '#d4860a'; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.borderColor = 'rgba(212,134,10,0.45)'; }}
-            >
+            }}>
               Jahresabo wählen →
             </a>
           </div>
