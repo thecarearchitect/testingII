@@ -13,11 +13,12 @@ import ModeIcon from '@/components/ModeIcon';
 const DEFAULT_SETTINGS: UserSettings = { personalContext: '', customInstructions: '' };
 
 const CARD_STYLES: Record<ModeId, { prominent?: boolean }> = {
-  allgemein:    { prominent: true  },
-  formular:     {},
-  widerspruch:  { prominent: true  },
-  pflegealltag: {},
-  rechtlich:    {},
+  allgemein:          { prominent: true  },
+  formular:           {},
+  widerspruch:        { prominent: true  },
+  pflegealltag:       {},
+  rechtlich:          {},
+  'kind-behinderung': { prominent: true  },
 };
 
 export default function Home() {

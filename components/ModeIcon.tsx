@@ -1,12 +1,13 @@
-import { MessageSquare, FileText, PenLine, Home, Scale, type LucideIcon } from 'lucide-react';
+import { MessageSquare, FileText, PenLine, Home, Scale, Baby, type LucideIcon } from 'lucide-react';
 import type { ModeId } from '@/lib/modes';
 
 const ICONS: Record<ModeId, LucideIcon> = {
-  allgemein:    MessageSquare,
-  formular:     FileText,
-  widerspruch:  PenLine,
-  pflegealltag: Home,
-  rechtlich:    Scale,
+  allgemein:          MessageSquare,
+  formular:           FileText,
+  widerspruch:        PenLine,
+  pflegealltag:       Home,
+  rechtlich:          Scale,
+  'kind-behinderung': Baby,
 };
 
 export default function ModeIcon({
