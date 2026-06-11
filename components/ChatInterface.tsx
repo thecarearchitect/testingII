@@ -73,7 +73,7 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
   const textareaRef      = useRef<HTMLTextAreaElement>(null);
   const fileInputRef     = useRef<HTMLInputElement>(null);
   const abortRef         = useRef<AbortController | null>(null);
-  const sendMessageRef   = useRef<(text: string) => void>(() => {});
+  const sendMessageRef   = useRef<(text: string, baseMessages?: Message[]) => void>(() => {});
   const hasAutoSentRef   = useRef(false);
 
   const activeMode = MODES.find((m) => m.id === modeId) ?? MODES[0];
@@ -82,29 +82,36 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     setRecentChats(getRecentChats().filter(c => c.modeId !== modeId));
   }, [modeId]);
 
-  // FIX 3: abort in-flight stream on mode change, then load stored chat
+  // Load stored chat on mount; abort any in-flight stream on unmount so a
+  // key-based remount (mode switch) can't save stale messages afterwards
   // TODO: Replace localStorage with Supabase when auth is implemented
   useEffect(() => {
-    abortRef.current?.abort();
     const stored = loadChat(modeId);
     setMessages(stored ? stored.messages as Message[] : []);
     setInput('');
     setError(null);
     setPendingAttachment(null);
     refreshRecents();
+    return () => abortRef.current?.abort();
   }, [modeId, refreshRecents]);
 
-  // FIX 2: auto-send once per mount; setTimeout(0) lets React flush stored-chat
-  // state before sendMessageRef is called. hasAutoSentRef guards against
-  // StrictMode double-fire (cleanup cancels the timer on the first invocation).
+  // Auto-send the demo question once. The once-guard is consumed when the
+  // timer FIRES, not when it is scheduled — StrictMode's mount/cleanup/mount
+  // cycle cancels the first timer, and the second schedule must still run.
+  // The base conversation is read straight from storage so the send appends
+  // to the stored history regardless of render/ref timing.
   useEffect(() => {
-    if (!initialMessage || hasAutoSentRef.current) return;
-    hasAutoSentRef.current = true;
-    onInitialMessageConsumed?.();
-    const id = setTimeout(() => sendMessageRef.current(initialMessage), 0);
+    if (!initialMessage) return;
+    const id = setTimeout(() => {
+      if (hasAutoSentRef.current) return;
+      hasAutoSentRef.current = true;
+      onInitialMessageConsumed?.();
+      const stored = loadChat(modeId);
+      sendMessageRef.current(initialMessage, (stored?.messages as Message[]) ?? []);
+    }, 0);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // empty deps: fires once on mount
+  }, []); // mount-only: instance is keyed, modeId/initialMessage are stable per mount
 
   const adjustTextarea = () => {
     const ta = textareaRef.current;
@@ -132,7 +139,7 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
 
   const canSend = !isLoading && (input.trim().length > 0 || pendingAttachment !== null);
 
-  const sendMessage = useCallback(async (text: string) => {
+  const sendMessage = useCallback(async (text: string, baseMessages?: Message[]) => {
     const trimmed = text.trim();
     if ((!trimmed && !pendingAttachment) || isLoading) return;
 
@@ -141,7 +148,7 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     const content = trimmed || DOCUMENT_ANALYSIS_PROMPT;
 
     const userMessage: Message = { role: 'user', content, ...(attachment ? { attachment } : {}) };
-    const newMessages = [...messages, userMessage];
+    const newMessages = [...(baseMessages ?? messages), userMessage];
     setMessages(newMessages);
     setInput('');
     setPendingAttachment(null);
