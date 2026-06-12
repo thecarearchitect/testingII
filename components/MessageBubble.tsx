@@ -36,7 +36,6 @@ export default function MessageBubble({ message }: { message: Message }) {
     return (
       <div className="flex justify-end message-enter">
         <div style={{ maxWidth: '78%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-          {/* Attachment badge */}
           {message.attachment && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -44,13 +43,12 @@ export default function MessageBubble({ message }: { message: Message }) {
               border: '1px solid rgba(212,134,10,0.30)',
               borderRadius: 8, padding: '5px 10px',
             }}>
-              <AttachIcon size={12} color="#d4860a" />
-              <span style={{ fontSize: 12, color: '#d4860a', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <AttachIcon size={12} color="var(--accent)" />
+              <span style={{ fontSize: 12, color: 'var(--accent)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {message.attachment.name}
               </span>
             </div>
           )}
-          {/* Message bubble — hide when it's just the auto-analysis boilerplate */}
           {!isAutoAnalysis && (
             <div style={{
               background: 'rgba(212,134,10,0.75)',
@@ -82,8 +80,8 @@ export default function MessageBubble({ message }: { message: Message }) {
 
       <div style={{ flex: 1, maxWidth: '88%' }}>
         <div style={{
-          background: '#16162a',
-          border: '1px solid #2a2a3f',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
           borderRadius: 12,
           padding: '16px 20px',
         }}>
@@ -96,11 +94,10 @@ export default function MessageBubble({ message }: { message: Message }) {
 
         <button
           onClick={handleCopy}
-          className="mt-1.5 ml-2 flex items-center gap-1 text-xs
-                     transition-colors opacity-0 group-hover:opacity-100"
-          style={{ color: 'rgba(255,255,255,0.25)' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.50)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
+          className="mt-1.5 ml-2 flex items-center gap-1 text-xs transition-colors opacity-0 group-hover:opacity-100"
+          style={{ color: 'var(--copy-btn)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--copy-btn-h)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--copy-btn)')}
         >
           {copied
             ? <><Check size={11} /><span>Kopiert</span></>

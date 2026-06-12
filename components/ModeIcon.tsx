@@ -13,7 +13,7 @@ const ICONS: Record<ModeId, LucideIcon> = {
 export default function ModeIcon({
   modeId,
   size = 18,
-  color = '#d4860a',
+  color = 'var(--accent)',
 }: {
   modeId: ModeId;
   size?: number;

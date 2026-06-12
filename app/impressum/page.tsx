@@ -7,39 +7,37 @@ export const metadata = {
 
 export default function ImpressumPage() {
   return (
-    <div style={{ background: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
 
-      {/* Nav */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(10,10,15,0.88)',
+        background: 'var(--nav-bg)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid var(--glass-dark-border)',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(212,134,10,0.18)', border: '1px solid rgba(212,134,10,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={14} color="#f59e0b" fill="#f59e0b" />
             </div>
-            <span style={{ fontFamily: 'Fraunces, Georgia, serif', color: '#f0ede8', fontSize: 15, fontWeight: 600 }}>
-              PflegeAssistent <span style={{ color: '#d4860a' }}>KI</span>
+            <span style={{ fontFamily: 'Fraunces, Georgia, serif', color: 'var(--text)', fontSize: 15, fontWeight: 600 }}>
+              PflegeAssistent <span style={{ color: 'var(--accent)' }}>KI</span>
             </span>
           </Link>
-          <Link href="/" style={{ fontSize: 13, color: '#a09a90', textDecoration: 'none' }}>
+          <Link href="/" style={{ fontSize: 13, color: 'var(--text-sub)', textDecoration: 'none' }}>
             ← Zurück zur App
           </Link>
         </div>
       </nav>
 
-      {/* Content */}
       <main style={{ maxWidth: 760, margin: '0 auto', padding: 'clamp(60px, 8vw, 100px) 24px' }}>
 
-        <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '3px', color: '#d4860a', marginBottom: 20 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '3px', color: 'var(--accent)', marginBottom: 20 }}>
           Rechtliches
         </p>
 
-        <h1 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 300, color: '#f0ede8', marginBottom: 60, lineHeight: 1.15 }}>
+        <h1 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 300, color: 'var(--text)', marginBottom: 60, lineHeight: 1.15 }}>
           Impressum
         </h1>
 
@@ -80,20 +78,19 @@ export default function ImpressumPage() {
           </p>
         </Section>
 
-        <div style={{ marginTop: 60, paddingTop: 32, borderTop: '1px solid #2a2a3f' }}>
-          <p style={{ fontSize: 12, color: '#4a4455' }}>
+        <div style={{ marginTop: 60, paddingTop: 32, borderTop: '1px solid var(--border)' }}>
+          <p style={{ fontSize: 12, color: 'var(--text-dimmer)' }}>
             Letzte Aktualisierung: {new Date().toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
           </p>
         </div>
 
       </main>
 
-      {/* Footer */}
-      <footer style={{ background: '#080808', padding: '32px 24px', textAlign: 'center' }}>
-        <p style={{ fontSize: 12, color: '#444' }}>
-          <Link href="/impressum" style={{ color: '#555', textDecoration: 'none' }}>Impressum</Link>
-          <span style={{ margin: '0 10px', color: '#333' }}>·</span>
-          <Link href="/datenschutz" style={{ color: '#555', textDecoration: 'none' }}>Datenschutz</Link>
+      <footer style={{ background: 'var(--bg)', borderTop: '1px solid var(--border)', padding: '32px 24px', textAlign: 'center' }}>
+        <p style={{ fontSize: 12, color: 'var(--text-sub)' }}>
+          <Link href="/impressum" style={{ color: 'var(--text-sub)', textDecoration: 'none' }}>Impressum</Link>
+          <span style={{ margin: '0 10px', color: 'var(--border)' }}>·</span>
+          <Link href="/datenschutz" style={{ color: 'var(--text-sub)', textDecoration: 'none' }}>Datenschutz</Link>
         </p>
       </footer>
     </div>
@@ -103,10 +100,10 @@ export default function ImpressumPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 48 }}>
-      <h2 style={{ fontSize: 13, fontWeight: 600, color: '#d4860a', marginBottom: 16, letterSpacing: '0.5px' }}>
+      <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', marginBottom: 16, letterSpacing: '0.5px' }}>
         {title}
       </h2>
-      <div style={{ borderLeft: '2px solid #2a2a3f', paddingLeft: 20 }}>
+      <div style={{ borderLeft: '2px solid var(--border)', paddingLeft: 20 }}>
         {children}
       </div>
     </div>
@@ -116,11 +113,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <span style={{ fontSize: 12, color: '#6b6575', marginRight: 8 }}>{label}:</span>
-      <span style={{ fontSize: 14, color: '#f0ede8' }}>{value}</span>
+      <span style={{ fontSize: 12, color: 'var(--text-dim)', marginRight: 8 }}>{label}:</span>
+      <span style={{ fontSize: 14, color: 'var(--text)' }}>{value}</span>
     </div>
   );
 }
 
-const body: React.CSSProperties = { fontSize: 14, color: '#a09a90', lineHeight: 1.8 };
-const hint: React.CSSProperties = { fontSize: 12, color: '#6b6575', lineHeight: 1.7, marginTop: 8, fontStyle: 'italic' };
+const body: React.CSSProperties = { fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.8 };
+const hint: React.CSSProperties = { fontSize: 12, color: 'var(--text-dim)', lineHeight: 1.7, marginTop: 8, fontStyle: 'italic' };
