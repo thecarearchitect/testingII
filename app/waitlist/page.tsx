@@ -1,20 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Heart, CheckCircle } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+
+const LIMIT = 100;
 
 export default function WaitlistPage() {
   const [email, setEmail]       = useState('');
   const [status, setStatus]     = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [count, setCount]       = useState<number | null>(null);
+  const [alreadyOn, setAlreadyOn] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/waitlist')
+      .then(r => r.json())
+      .then(d => { if (typeof d.count === 'number') setCount(d.count); })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
     setStatus('loading');
     setErrorMsg('');
+    setAlreadyOn(false);
 
     try {
       const res = await fetch('/api/waitlist', {
@@ -22,16 +34,25 @@ export default function WaitlistPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Fehler beim Speichern');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? 'Fehler beim Speichern');
+
+      if (typeof data.count === 'number') setCount(data.count);
+
+      if (data.alreadyExists) {
+        setAlreadyOn(true);
+        setStatus('idle');
+      } else {
+        setStatus('success');
       }
-      setStatus('success');
     } catch (err) {
       setStatus('error');
       setErrorMsg(err instanceof Error ? err.message : 'Unbekannter Fehler');
     }
   };
+
+  const pct = count !== null ? Math.min(Math.round((count / LIMIT) * 100), 100) : null;
+  const spotsLeft = count !== null ? Math.max(LIMIT - count, 0) : null;
 
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
@@ -83,10 +104,58 @@ export default function WaitlistPage() {
           Premium kommt bald.
         </h1>
 
-        <p style={{ fontSize: 17, color: 'var(--text-sub)', lineHeight: 1.8, marginBottom: 52 }}>
+        <p style={{ fontSize: 17, color: 'var(--text-sub)', lineHeight: 1.8, marginBottom: 40 }}>
           Trag dich ein und wir informieren dich als Erstes.
         </p>
 
+        {/* ── Counter / Progress ── */}
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: 14, padding: '20px 24px',
+          marginBottom: 32,
+        }}>
+          {pct === null ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {/* Skeleton */}
+              <div style={{ height: 14, borderRadius: 7, background: 'var(--border)', width: '60%', margin: '0 auto', opacity: 0.6 }} />
+              <div style={{ height: 8, borderRadius: 4, background: 'var(--border)', opacity: 0.4 }} />
+              <div style={{ height: 12, borderRadius: 6, background: 'var(--border)', width: '40%', margin: '0 auto', opacity: 0.3 }} />
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                  {count} von {LIMIT} Plätzen vergeben
+                </span>
+                <span style={{ fontSize: 12, color: spotsLeft === 0 ? '#e87070' : 'var(--accent)', fontWeight: 600 }}>
+                  {spotsLeft === 0 ? 'Ausgebucht' : `noch ${spotsLeft} frei`}
+                </span>
+              </div>
+              {/* Progress bar */}
+              <div style={{
+                height: 8, borderRadius: 4,
+                background: 'var(--border)',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  height: '100%',
+                  width: `${pct}%`,
+                  borderRadius: 4,
+                  background: pct >= 90
+                    ? 'linear-gradient(90deg, var(--accent), #e87070)'
+                    : 'var(--accent)',
+                  transition: 'width 0.6s ease',
+                }} />
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--text-dimmer)', marginTop: 8 }}>
+                100 Founding Member · dauerhaft kostenloser Premium-Zugang
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* ── Form / Success ── */}
         {status === 'success' ? (
           <div style={{
             padding: '32px 28px',
@@ -105,6 +174,16 @@ export default function WaitlistPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {alreadyOn && (
+              <p style={{
+                fontSize: 13, color: 'var(--accent)',
+                background: 'rgba(212,134,10,0.08)',
+                border: '1px solid rgba(212,134,10,0.20)',
+                borderRadius: 10, padding: '10px 14px',
+              }}>
+                Du bist bereits auf der Liste.
+              </p>
+            )}
             <input
               type="email"
               value={email}
@@ -131,11 +210,13 @@ export default function WaitlistPage() {
                 background: status === 'loading' ? 'rgba(212,134,10,0.5)' : 'var(--accent)',
                 color: '#fff', border: 'none',
                 borderRadius: 9999, padding: '16px 32px',
-                fontSize: 15, fontWeight: 600, cursor: status === 'loading' ? 'default' : 'pointer',
+                fontSize: 15, fontWeight: 600,
+                cursor: status === 'loading' ? 'default' : 'pointer',
+                opacity: !email.trim() && status !== 'loading' ? 0.45 : 1,
                 transition: 'opacity .15s',
               }}
-              onMouseEnter={e => { if (status !== 'loading') e.currentTarget.style.opacity = '0.85'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+              onMouseEnter={e => { if (status !== 'loading' && email.trim()) e.currentTarget.style.opacity = '0.85'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = !email.trim() ? '0.45' : '1'; }}
             >
               {status === 'loading' ? 'Wird gespeichert…' : 'Benachrichtigen →'}
             </button>
@@ -150,6 +231,7 @@ export default function WaitlistPage() {
           Keine Werbung. Nur eine Nachricht wenn Premium startet.
         </p>
 
+        {/* Coming soon features */}
         <div style={{ marginTop: 64, textAlign: 'left' }}>
           <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-dimmer)', marginBottom: 20, textAlign: 'center' }}>
             Was dich erwartet

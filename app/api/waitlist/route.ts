@@ -1,20 +1,21 @@
+import { kv } from '@vercel/kv';
 import { NextRequest } from 'next/server';
 
-// TODO: Connect to database (Supabase/Prisma)
-// TODO: Add authentication check
-//
-// To integrate Supabase:
-//   import { createClient } from '@supabase/supabase-js'
-//   const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
-//   await supabase.from('waitlist').insert({ email, created_at: new Date() })
-//
-// To integrate Resend (transactional email):
-//   import { Resend } from 'resend'
-//   const resend = new Resend(process.env.RESEND_API_KEY)
-//   await resend.emails.send({ from: '...', to: email, subject: 'Du bist auf der Liste!' })
+const COUNT_KEY  = 'waitlist:count';
+const EMAILS_KEY = 'waitlist:emails';
+const LIMIT      = 100;
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export async function GET() {
+  try {
+    const count = (await kv.get<number>(COUNT_KEY)) ?? 0;
+    return Response.json({ count, limit: LIMIT });
+  } catch {
+    return Response.json({ error: 'KV nicht erreichbar.' }, { status: 503 });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -27,12 +28,18 @@ export async function POST(req: NextRequest) {
 
     const sanitized = email.trim().toLowerCase();
 
-    // MVP: log to console — replace with real persistence below
-    console.log(`[waitlist] New signup: ${sanitized} at ${new Date().toISOString()}`);
+    const alreadyExists = await kv.sismember(EMAILS_KEY, sanitized);
+    if (alreadyExists) {
+      const count = (await kv.get<number>(COUNT_KEY)) ?? 0;
+      return Response.json({ count, alreadyExists: true });
+    }
 
-    // TODO: persist to Supabase / send via Resend (see comments above)
+    await kv.sadd(EMAILS_KEY, sanitized);
+    const count = await kv.incr(COUNT_KEY);
 
-    return Response.json({ ok: true }, { status: 200 });
+    // TODO: E-Mail Bestätigung via Resend wenn Founding Member freigeschaltet
+
+    return Response.json({ count, alreadyExists: false });
   } catch {
     return Response.json({ error: 'Interner Fehler. Bitte erneut versuchen.' }, { status: 500 });
   }
