@@ -8,13 +8,9 @@ const LABELS = [
 ];
 
 interface Paper {
-  x: number;
-  y: number;
-  rotation: number;
-  rotSpeed: number;
-  speed: number;
-  label: string;
-  opacity: number;
+  x: number; y: number;
+  rotation: number; rotSpeed: number;
+  speed: number; label: string; opacity: number;
 }
 
 const W = 62, H = 80;
@@ -31,6 +27,16 @@ function randomPaper(canvasWidth: number, startDistributed = false): Paper {
   };
 }
 
+function getCanvasColors() {
+  const s = getComputedStyle(document.documentElement);
+  return {
+    paper:  s.getPropertyValue('--canvas-paper').trim()  || '#1e1e2e',
+    stroke: s.getPropertyValue('--canvas-stroke').trim() || '#2a2a4a',
+    lines:  s.getPropertyValue('--canvas-lines').trim()  || '#252540',
+    label:  s.getPropertyValue('--canvas-label').trim()  || '#3a3a5a',
+  };
+}
+
 export default function PaperCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -40,18 +46,16 @@ export default function PaperCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
-    const COUNT = 18;
-    const papers: Paper[] = Array.from({ length: COUNT }, () =>
-      randomPaper(canvas.width, true)
-    );
+    let colors = getCanvasColors();
+    const mutObs = new MutationObserver(() => { colors = getCanvasColors(); });
+    mutObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
+    const COUNT = 18;
+    const papers: Paper[] = Array.from({ length: COUNT }, () => randomPaper(canvas.width, true));
     let animId: number;
 
     const drawRoundRect = (x: number, y: number, w: number, h: number, r: number) => {
@@ -70,23 +74,20 @@ export default function PaperCanvas() {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       for (const p of papers) {
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate((p.rotation * Math.PI) / 180);
         ctx.globalAlpha = p.opacity;
 
-        // Paper body
         drawRoundRect(-W / 2, -H / 2, W, H, 3);
-        ctx.fillStyle = '#1e1e2e';
+        ctx.fillStyle = colors.paper;
         ctx.fill();
-        ctx.strokeStyle = '#2a2a4a';
+        ctx.strokeStyle = colors.stroke;
         ctx.lineWidth = 0.8;
         ctx.stroke();
 
-        // Ruled lines
-        ctx.strokeStyle = '#252540';
+        ctx.strokeStyle = colors.lines;
         ctx.lineWidth = 0.6;
         for (let l = 0; l < 4; l++) {
           const ly = -H / 2 + 26 + l * 11;
@@ -96,25 +97,17 @@ export default function PaperCanvas() {
           ctx.stroke();
         }
 
-        // Label
-        ctx.fillStyle = '#3a3a5a';
+        ctx.fillStyle = colors.label;
         ctx.font = '500 7px Inter, system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(p.label, 0, -H / 2 + 13);
 
         ctx.restore();
-
-        // Physics
         p.y += p.speed;
         p.rotation += p.rotSpeed;
-
-        // Recycle
-        if (p.y > canvas.height + H + 20) {
-          Object.assign(p, randomPaper(canvas.width, false));
-        }
+        if (p.y > canvas.height + H + 20) Object.assign(p, randomPaper(canvas.width, false));
       }
-
       animId = requestAnimationFrame(draw);
     };
 
@@ -123,6 +116,7 @@ export default function PaperCanvas() {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
+      mutObs.disconnect();
     };
   }, []);
 

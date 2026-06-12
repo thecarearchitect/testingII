@@ -17,7 +17,7 @@ export interface Attachment {
   name: string;
   size: number;
   mediaType: 'application/pdf' | 'image/jpeg' | 'image/png';
-  data: string; // base64, no prefix
+  data: string;
 }
 
 export interface Message {
@@ -82,9 +82,6 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     setRecentChats(getRecentChats().filter(c => c.modeId !== modeId));
   }, [modeId]);
 
-  // Load stored chat on mount; abort any in-flight stream on unmount so a
-  // key-based remount (mode switch) can't save stale messages afterwards
-  // TODO: Replace localStorage with Supabase when auth is implemented
   useEffect(() => {
     const stored = loadChat(modeId);
     setMessages(stored ? stored.messages as Message[] : []);
@@ -95,11 +92,6 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     return () => abortRef.current?.abort();
   }, [modeId, refreshRecents]);
 
-  // Auto-send the demo question once. The once-guard is consumed when the
-  // timer FIRES, not when it is scheduled — StrictMode's mount/cleanup/mount
-  // cycle cancels the first timer, and the second schedule must still run.
-  // The base conversation is read straight from storage so the send appends
-  // to the stored history regardless of render/ref timing.
   useEffect(() => {
     if (!initialMessage) return;
     const id = setTimeout(() => {
@@ -111,7 +103,7 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     }, 0);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // mount-only: instance is keyed, modeId/initialMessage are stable per mount
+  }, []);
 
   const adjustTextarea = () => {
     const ta = textareaRef.current;
@@ -184,8 +176,6 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
         setMessages([...newMessages, { role: 'assistant', content: accumulated }]);
       }
 
-      // Save completed conversation to localStorage
-      // TODO: Replace localStorage with Supabase when auth is implemented
       const finalMessages = [...newMessages, { role: 'assistant', content: accumulated }];
       saveChat(
         modeId,
@@ -210,15 +200,12 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
     }
   }, [messages, modeId, activeMode.title, isLoading, userSettings, pendingAttachment, onChatSaved]);
 
-  // Keep ref current after every render so the auto-send effect never captures a stale sendMessage
   useEffect(() => { sendMessageRef.current = sendMessage; });
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
   };
 
-  // Clear in-memory state + localStorage for this mode
-  // TODO: Replace localStorage with Supabase when auth is implemented
   const startNewChat = () => {
     abortRef.current?.abort();
     clearChat(modeId);
@@ -234,16 +221,14 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
 
   return (
     <div className="flex flex-col h-full">
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
         {messages.length === 0 ? (
           <>
-            {/* Letzte Gespräche (other modes) */}
             {showRecents && (
               <div style={{ marginBottom: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-                  <Clock size={11} color="#4a4455" />
-                  <span style={{ fontSize: 11, color: '#4a4455', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                  <Clock size={11} color="var(--text-dimmer)" />
+                  <span style={{ fontSize: 11, color: 'var(--text-dimmer)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                     Letzte Gespräche
                   </span>
                 </div>
@@ -253,24 +238,24 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
                       key={chat.modeId}
                       onClick={() => onOpenMode?.(chat.modeId)}
                       style={{
-                        background: '#16162a',
-                        border: '1px solid #2a2a3f',
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border)',
                         borderRadius: 10, padding: '10px 14px',
                         cursor: 'pointer', textAlign: 'left', width: '100%',
                         transition: 'border-color .15s',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4860a'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a3f'; }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontSize: 11, color: '#d4860a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
                           {chat.modeTitle}
                         </span>
-                        <span style={{ fontSize: 11, color: '#a09a90' }}>
+                        <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>
                           {formatRelativeDate(chat.lastAt)}
                         </span>
                       </div>
-                      <span style={{ fontSize: 13, color: '#f0ede8', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--text)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {chat.preview || '—'}
                       </span>
                     </button>
@@ -300,7 +285,7 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
                   <SparkleIcon active />
                 </div>
                 <div style={{
-                  background: '#16162a', border: '1px solid #2a2a3f',
+                  background: 'var(--bg-card)', border: '1px solid var(--border)',
                   borderRadius: '12px 12px 12px 4px', padding: '12px 16px',
                 }}>
                   <div className="flex gap-1.5 items-center h-5">
@@ -323,42 +308,41 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
       </div>
 
       {messages.length > 0 && (
-        <p className="text-center text-xs text-white/20 px-4 pb-1">
+        <p className="text-center text-xs px-4 pb-1" style={{ color: 'var(--text-dimmer)' }}>
           Allgemeine Informationen – kein Ersatz für individuelle Fachberatung
         </p>
       )}
 
-      {/* Input area */}
       <div className="flex-shrink-0 px-4 py-3"
-           style={{ background: 'rgba(10,8,5,0.75)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+           style={{ background: 'var(--input-bg)', backdropFilter: 'blur(20px)', borderTop: '1px solid var(--glass-dark-border)' }}>
 
         {messages.length > 0 && (
           <div className="flex justify-end mb-2">
             <button onClick={startNewChat}
-              className="flex items-center gap-1.5 text-xs text-white/25 hover:text-amber-400 transition-colors">
+              className="flex items-center gap-1.5 text-xs hover:text-amber-400 transition-colors"
+              style={{ color: 'var(--text-dimmer)' }}>
               <RotateCcw size={11} /> Neues Gespräch
             </button>
           </div>
         )}
 
-        {/* Attachment preview */}
         {pendingAttachment && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            background: '#16162a', border: '1px solid #2a2a3f',
+            background: 'var(--bg-card)', border: '1px solid var(--border)',
             borderRadius: 10, padding: '8px 12px', marginBottom: 8,
           }}>
-            <FileText size={14} color="#d4860a" style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: 13, color: '#f0ede8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <FileText size={14} color="var(--accent)" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {pendingAttachment.name}
             </span>
-            <span style={{ fontSize: 11, color: '#6b6575', flexShrink: 0 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-dim)', flexShrink: 0 }}>
               {formatBytes(pendingAttachment.size)}
             </span>
             <button onClick={() => setPendingAttachment(null)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b6575', display: 'flex', padding: 2 }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#f0ede8')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#6b6575')}>
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dim)', display: 'flex', padding: 2 }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-dim)')}>
               <X size={14} />
             </button>
           </div>
@@ -375,14 +359,14 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
               flexShrink: 0, width: 40, height: 40,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: 12,
-              border: `1px solid ${pendingAttachment ? '#d4860a' : 'rgba(255,255,255,0.10)'}`,
-              background: pendingAttachment ? 'rgba(212,134,10,0.15)' : 'rgba(255,255,255,0.05)',
-              color: pendingAttachment ? '#d4860a' : 'rgba(255,255,255,0.35)',
+              border: `1px solid ${pendingAttachment ? 'var(--accent)' : 'rgba(128,128,128,0.20)'}`,
+              background: pendingAttachment ? 'rgba(212,134,10,0.15)' : 'rgba(128,128,128,0.06)',
+              color: pendingAttachment ? 'var(--accent)' : 'var(--text-sub)',
               cursor: isLoading ? 'not-allowed' : 'pointer',
               transition: 'background .15s, color .15s, border-color .15s',
             }}
-            onMouseEnter={e => { if (!isLoading && !pendingAttachment) { e.currentTarget.style.borderColor = '#d4860a'; e.currentTarget.style.color = '#d4860a'; } }}
-            onMouseLeave={e => { if (!pendingAttachment) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; } }}
+            onMouseEnter={e => { if (!isLoading && !pendingAttachment) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }}
+            onMouseLeave={e => { if (!pendingAttachment) { e.currentTarget.style.borderColor = 'rgba(128,128,128,0.20)'; e.currentTarget.style.color = 'var(--text-sub)'; } }}
           >
             <Paperclip size={15} />
           </button>
@@ -400,9 +384,9 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
             className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm leading-relaxed focus:outline-none focus:ring-1 focus:ring-amber-400/40 transition-all"
             style={{
               minHeight: '42px', maxHeight: '120px',
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              color: 'rgba(255,255,255,0.9)',
+              background: 'var(--textarea-bg)',
+              border: '1px solid var(--textarea-border)',
+              color: 'var(--text)',
             }}
           />
 
@@ -422,15 +406,13 @@ export default function ChatInterface({ modeId, userSettings, onChatSaved, onOpe
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: 12, border: 'none',
                 cursor: canSend ? 'pointer' : 'not-allowed',
-                background: '#d4860a', color: '#fff',
+                background: 'var(--accent)', color: '#fff',
                 opacity: canSend ? 1 : 0.3,
-                transition: 'background .15s ease, opacity .15s ease',
+                transition: 'opacity .15s ease',
                 boxShadow: canSend ? '0 4px 16px rgba(212,134,10,0.30)' : 'none',
               }}
-              onMouseEnter={e => { if (canSend) e.currentTarget.style.background = '#e8950a'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#d4860a'; }}
-              onMouseDown={e => { if (canSend) e.currentTarget.style.background = '#c07808'; }}
-              onMouseUp={e => { if (canSend) e.currentTarget.style.background = '#e8950a'; }}
+              onMouseEnter={e => { if (canSend) e.currentTarget.style.opacity = '0.85'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = canSend ? '1' : '0.3'; }}
             >
               <Send size={15} />
             </button>
